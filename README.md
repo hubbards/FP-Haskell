@@ -15,6 +15,6 @@ Build the project with the command `stack build`.
 
 ### Test
 
-Test the `Tree` module with the command `stack exec doctest -- src/Tree.hs`.
+Test the project with the command `stack test`.
 
 [stack]: https://www.haskellstack.org
