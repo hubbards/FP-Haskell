@@ -4,7 +4,8 @@ module Applicative where
 import Prelude hiding (
     Monoid(..)
   , Functor(..)
-  , Applicative(..))
+  , Applicative(..)
+  )
 
 import Monoid
 import Functor

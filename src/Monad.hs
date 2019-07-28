@@ -10,7 +10,8 @@ import Prelude hiding (
   , Functor(..)
   , Applicative(..)
   , Monad(..)
-  , sequence)
+  , sequence
+  )
 
 import Monoid
 import Functor

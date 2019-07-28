@@ -3,7 +3,7 @@
 -- | This module contains a type class for monoids.
 module Monoid where
 
-import Prelude hiding (Monoid(..))
+import Prelude hiding ( Monoid(..) )
 
 -- | Type class for monoids.
 --

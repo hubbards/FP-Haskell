@@ -1,7 +1,7 @@
 -- | This module contains a type class for functors.
 module Functor where
 
-import Prelude hiding (Functor(..))
+import Prelude hiding ( Functor(..) )
 
 -- | Type class for functors.
 --

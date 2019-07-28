@@ -1,7 +1,7 @@
 -- | This module contains an example of zippers for binary trees.
 module Tree where
 
-import Text.PrettyPrint hiding (isEmpty)
+import Text.PrettyPrint hiding ( isEmpty )
 
 -- -----------------------------------------------------------------------------
 -- Binary tree

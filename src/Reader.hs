@@ -5,7 +5,8 @@ module Reader where
 import Prelude hiding (
     Functor(..)
   , Applicative(..)
-  , Monad(..))
+  , Monad(..)
+  )
 
 import Functor
 import Applicative

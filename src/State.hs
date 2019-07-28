@@ -6,7 +6,8 @@ import Prelude hiding (
     Monoid(..)
   , Functor(..)
   , Applicative(..)
-  , Monad(..))
+  , Monad(..)
+  )
 
 import Monoid
 import Functor
