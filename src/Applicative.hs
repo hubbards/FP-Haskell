@@ -5,6 +5,8 @@ import Prelude hiding (
     Monoid(..)
   , Functor(..)
   , Applicative(..)
+  , (<$>)
+  , sequenceA
   )
 
 import Monoid
@@ -44,6 +46,14 @@ class Functor t => Applicative t where
 (<$>) :: Functor t => (a -> b) -> t a -> t b
 (<$>) = fmap
 
+liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
+liftA2 f x y = f <$> x <*> y
+
+sequenceA :: Applicative t => [t a] -> t [a]
+sequenceA []       = pure []
+sequenceA (x : xs) = (:) <$> x <*> sequenceA xs
+--sequenceA = foldr (liftA2 (:)) (pure [])
+
 -- -----------------------------------------------------------------------------
 -- Example instances
 
@@ -64,6 +74,13 @@ instance Monoid a => Applicative ((,) a) where
 instance Applicative ((->) a) where
   pure = const
   f <*> g = \x -> f x (g x)
+
+newtype ZipList a = ZipList { getZipList :: [a] }
+  deriving ( Eq, Ord, Read, Show )
+
+instance Applicative (ZipList a) where
+  pure = ZipList . repeat
+  ZipList fs <*> ZipList xs = ZipList $ zipWith ($) fs xs
 
 instance Applicative [] where
   pure x = [x]
