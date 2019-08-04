@@ -127,7 +127,8 @@ instance Monoid [a] where
   mappend = (++)
 
 -- | A function type (with same domain and codomain) is a monoid under function
--- composition.
+-- composition. Note that this requires the @FlexibleInstances@ language
+-- extension.
 instance Monoid (a -> a) where
   mempty = id
   mappend = (.)
