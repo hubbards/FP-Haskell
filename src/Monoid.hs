@@ -100,9 +100,8 @@ instance Monoid Bool where
 -- | @Ordering@ is a monoid.
 instance Monoid Ordering where
   mempty = EQ
-  LT `mappend` _ = LT
-  EQ `mappend` y = y
-  GT `mappend` _ = GT
+  mappend EQ = id
+  mappend o  = const o
 
 -- | New type for treating a @Maybe@ type as a monoid.
 newtype First a = First { getFirst :: Maybe a }
@@ -111,8 +110,8 @@ newtype First a = First { getFirst :: Maybe a }
 -- | A @Maybe@ type is a monoid.
 instance Monoid (First a) where
   mempty = First Nothing
-  First (Just x) `mappend` _ = First (Just x)
-  First Nothing  `mappend` x = x
+  mappend (First Nothing) = id
+  mappend f               = const f
 
 -- | A @Maybe@ type is a monoid when the type parameter is a monoid.
 instance Monoid a => Monoid (Maybe a) where
