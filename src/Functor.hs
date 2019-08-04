@@ -5,13 +5,13 @@ import Prelude hiding ( Functor(..) )
 
 -- | Type class for functors.
 --
---   Identity law:
+-- Identity law:
 --
---   prop> fmap id = id
+-- prop> fmap id = id
 --
---   Map fusion law:
+-- Map fusion law:
 --
---   prop> fmap (g . f) = fmap g . fmap f
+-- prop> fmap (g . f) = fmap g . fmap f
 --
 class Functor t where
   -- Map

@@ -1,7 +1,7 @@
 -- | This module contains type classes for monads, monads that are monoids, and
---   monad transformers.
+-- monad transformers.
 --
---   TODO: lookup language extension for overriding do-notation
+-- TODO: lookup language extension for overriding do-notation
 --
 module Monad where
 
@@ -22,25 +22,25 @@ infixl 1 >>
 
 -- | Type class for monads.
 --
---   Left identity law:
+-- Left identity law:
 --
---   prop> return x >>= f = f x
+-- prop> return x >>= f = f x
 --
---   Right identity law:
+-- Right identity law:
 --
---   prop> tx >>= return = return tx
+-- prop> tx >>= return = return tx
 --
---   Associativity:
+-- Associativity:
 --
---   prop> (tx >>= f) >>= g = tx >>= (\x -> f x >>= g)
+-- prop> (tx >>= f) >>= g = tx >>= (\x -> f x >>= g)
 --
---   Relationship with functors:
+-- Relationship with functors:
 --
---   prop> fmap = liftM
+-- prop> fmap = liftM
 --
---   Relationship with applicative functors:
+-- Relationship with applicative functors:
 --
---   prop> (<*>) = ap
+-- prop> (<*>) = ap
 --
 class Applicative t => Monad t where
   -- Inject
@@ -51,17 +51,17 @@ class Applicative t => Monad t where
 
 -- | Type class for monads that are monoids.
 --
---   Monoid laws:
+-- Monoid laws:
 --
---   prop> x `mplus` y `mplus` z = x `mplus` (y `mplus` z)
+-- prop> x `mplus` y `mplus` z = x `mplus` (y `mplus` z)
 --
---   prop> mzero `mplus` x = x
+-- prop> mzero `mplus` x = x
 --
---   prop> x `mplus` mzero = x
+-- prop> x `mplus` mzero = x
 --
---   Failure propagation law:
+-- Failure propagation law:
 --
---   prop> mzero >>= f = mzero
+-- prop> mzero >>= f = mzero
 --
 class Monad t => MonadPlus t where
   mzero :: t a
@@ -69,13 +69,13 @@ class Monad t => MonadPlus t where
 
 -- | Type class for monad transformers.
 --
---   Identity law:
+-- Identity law:
 --
---   prop> lift . return = return
+-- prop> lift . return = return
 --
---   Distributivity law:
+-- Distributivity law:
 --
---   prop> lift (m >>= f) = lift m >>= (lift . f)
+-- prop> lift (m >>= f) = lift m >>= (lift . f)
 --
 class MonadTrans t where
   -- Lift
@@ -136,10 +136,10 @@ instance MonadPlus [] where
 -- -----------------------------------------------------------------------------
 -- MonadTrans example instances
 
---  TODO: add Control.Monad.Identity
+-- TODO: add Control.Monad.Identity
 
 -- | Data type for maybe monad transformer. The first type parameter represents
---   the inner monad.
+-- the inner monad.
 data MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 
 instance MonadTrans MaybeT where
@@ -168,4 +168,4 @@ instance Monad m => MonadPlus (MaybeT m) where
                                       Nothing -> return m
                                       Just z  -> runMaybeT y
 
---  TODO: add primatives / functions from Control.Monad.Trans.Maybe
+-- TODO: add primatives / functions from Control.Monad.Trans.Maybe

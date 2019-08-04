@@ -1,5 +1,5 @@
 -- | This module contains implementations of the writer monad and the writer
---   monad transformer.
+-- monad transformer.
 module Writer where
 
 import Prelude hiding (
@@ -18,10 +18,10 @@ import Monad
 -- Writer monad data type and type class instances
 
 -- | Data type for writer. The first type parameter represents the type of logs
---   (or tags). The second type parameter represents the type of values being
---   logged.
+-- (or tags). The second type parameter represents the type of values being
+-- logged.
 --
---   In domain theory, this corresponds to a product domain.
+-- In domain theory, this corresponds to a product domain.
 data Writer w a = W w a
 --type Writer w a = WriterT w Identity a
 

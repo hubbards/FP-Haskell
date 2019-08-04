@@ -1,5 +1,5 @@
 -- | This module contains implementations of the state monad and the state monad
---   transformer.
+-- transformer.
 module State where
 
 import Prelude hiding (
@@ -18,10 +18,10 @@ import Monad
 -- State monad
 
 -- | Data type for effectful computation. The first type parameter represents a
---   (side) effect type. The second type parameter represents a result type.
+-- (side) effect type. The second type parameter represents a result type.
 --
---   In domain theory, this corresponds to a function domain for naming with
---   mutable variables.
+-- In domain theory, this corresponds to a function domain for naming with
+-- mutable variables.
 data State s a = S (s -> (a, s))
 --type State s a = StateT s Identity a
 
@@ -50,7 +50,7 @@ get :: State s s
 get = S $ \ s -> (s, s)
 
 -- | Run effectful computation with initial state and return effect and result
---   of computation.
+-- of computation.
 runState :: State s a -> s -> (a, s)
 runState (S c) s = c s
 
@@ -68,8 +68,8 @@ execState sc s = snd (runState sc s)
 -- State monad transformer
 
 -- | Data type for state monad transformer. The first and last type parameters
---   are the same as before and the second type parameter represents the inner
---   monad.
+-- are the same as before and the second type parameter represents the inner
+-- monad.
 data StateT s m a = StateT { runStateT :: s -> m (a, s) }
 
 instance MonadTrans (StateT s) where

@@ -12,25 +12,25 @@ import Functor
 
 -- | Type class for applicative functors.
 --
---   Identity law:
+-- Identity law:
 --
---   prop> pure id <*> tx = tx
+-- prop> pure id <*> tx = tx
 --
---   Homomorphism law:
+-- Homomorphism law:
 --
---   prop> pure f <*> pure x = pure (f x)
+-- prop> pure f <*> pure x = pure (f x)
 --
---   Composition law:
+-- Composition law:
 --
---   prop> pure (.) <*> tu <*> tv <*> tw = tu <*> (tv <*> tw)
+-- prop> pure (.) <*> tu <*> tv <*> tw = tu <*> (tv <*> tw)
 --
---   Application law:
+-- Application law:
 --
---   prop> tf <*> pure x = pure ($ x) <*> tf
+-- prop> tf <*> pure x = pure ($ x) <*> tf
 --
---   Relationship with functors:
+-- Relationship with functors:
 --
---   prop> fmap f x = pure f <*> x = f <$> x
+-- prop> fmap f x = pure f <*> x = f <$> x
 --
 class Functor t => Applicative t where
   -- Inject

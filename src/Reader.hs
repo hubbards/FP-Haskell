@@ -1,5 +1,5 @@
 -- | This module contains implementations of the reader monad and the reader
---   monad transformer.
+-- monad transformer.
 module Reader where
 
 import Prelude hiding (
@@ -16,11 +16,11 @@ import Monad
 -- Reader monad data type and type class instances
 
 -- | Data type for reader. The first type parameter represents an environment
---   type, which is usually a function from names to bound values. The second
---   type parameter represents a result value type.
+-- type, which is usually a function from names to bound values. The second
+-- type parameter represents a result value type.
 --
---   In domain theory, this corresponds to a function domain for naming with
---   immutable variables.
+-- In domain theory, this corresponds to a function domain for naming with
+-- immutable variables.
 data Reader r a = R (r -> a)
 --type Reader r a = ReaderT r Identity a
 
@@ -53,8 +53,8 @@ local = undefined
 -- Reader monad transformer data type and type class instances
 
 -- | Data type for reader monad transformer. The first and last type parameters
---   are the same as before and the second type parameter represents the inner
---   monad.
+-- are the same as before and the second type parameter represents the inner
+-- monad.
 data ReaderT r m a = ReaderT { runReaderT :: r -> m a }
 
 instance MonadTrans (ReaderT r) where
