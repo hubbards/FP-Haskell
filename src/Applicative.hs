@@ -75,6 +75,10 @@ instance Applicative ((->) a) where
   pure = const
   f <*> g = \x -> f x (g x)
 
+instance Applicative [] where
+  pure x = [x]
+  fs <*> xs = [f x | f <- fs, x <- xs]
+
 newtype ZipList a = ZipList { getZipList :: [a] }
   deriving ( Eq, Ord, Read, Show )
 
@@ -85,7 +89,3 @@ instance Applicative ZipList where
 -- Boilerplate
 instance Functor ZipList where
   fmap = (<$>)
-
-instance Applicative [] where
-  pure x = [x]
-  fs <*> xs = [f x | f <- fs, x <- xs]

@@ -48,6 +48,11 @@ instance Num a => Monoid (Product a) where
   mempty = Product 1
   Product x `mappend` Product y = Product (x * y)
 
+-- symmetric difference, i.e., exclusive or (XOR)
+instance Monoid Bool where
+  mempty = False
+  x `mappend` y = x && not y || y && not x
+
 newtype Any = Any { getAny :: Bool }
   deriving ( Eq, Ord, Bounded, Read, Show )
 
@@ -62,33 +67,31 @@ instance Monoid All where
   mempty = All True
   All x `mappend` All y = All (x && y)
 
-instance Monoid Bool where
-  mempty = False
-  x `mappend` y = x && not y || y && not x
-
 instance Monoid Ordering where
   mempty = EQ
-  mappend EQ = id
-  mappend o  = const o
+  LT `mappend` _ = LT
+  EQ `mappend` o = o
+  GT `mappend` _ = GT
+
+instance Monoid a => Monoid (Maybe a) where
+  mempty = Nothing
+  Nothing `mappend` m       = m
+  m       `mappend` Nothing = m
+  Just x  `mappend` Just y  = Just (x `mappend` y)
 
 newtype First a = First { getFirst :: Maybe a }
   deriving ( Eq, Ord, Read, Show )
 
 instance Monoid (First a) where
   mempty = First Nothing
-  mappend (First Nothing) = id
-  mappend f               = const f
-
-instance Monoid a => Monoid (Maybe a) where
-  mempty = Nothing
-  Nothing `mappend` x       = x
-  x       `mappend` Nothing = x
-  Just x  `mappend` Just y  = Just (x `mappend` y)
+  First Nothing `mappend` f = f
+  f             `mappend` _ = f
 
 instance Monoid [a] where
   mempty = []
   mappend = (++)
 
+-- need FlexibleInstances language extension
 instance Monoid (a -> a) where
   mempty = id
   mappend = (.)
