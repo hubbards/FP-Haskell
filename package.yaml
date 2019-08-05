@@ -22,7 +22,7 @@ dependencies:
 - base >= 4.7 && < 5
 - pretty
 
-ghc-options: -Wall
+# ghc-options: -Wall
 
 library:
   source-dirs: src

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6a9d0ccce12aad58e5c0beca2683b93d7f67c2bf6a006f546242269758846015
+-- hash: b4f82b2b4db154990a46a763ba88502a0da7d57abc007d6a5f5ecd4f088b8fba
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -40,7 +40,6 @@ library
       Paths_fp_haskell
   hs-source-dirs:
       src
-  ghc-options: -Wall
   build-depends:
       base >=4.7 && <5
     , pretty
@@ -53,7 +52,6 @@ test-suite tests
       Paths_fp_haskell
   hs-source-dirs:
       test
-  ghc-options: -Wall
   build-depends:
       base >=4.7 && <5
     , doctest >=0.8
