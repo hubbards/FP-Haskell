@@ -78,9 +78,13 @@ instance Applicative ((->) a) where
 newtype ZipList a = ZipList { getZipList :: [a] }
   deriving ( Eq, Ord, Read, Show )
 
-instance Applicative (ZipList a) where
+instance Applicative ZipList where
   pure = ZipList . repeat
   ZipList fs <*> ZipList xs = ZipList $ zipWith ($) fs xs
+
+-- Boilerplate
+instance Functor ZipList where
+  fmap = (<$>)
 
 instance Applicative [] where
   pure x = [x]
