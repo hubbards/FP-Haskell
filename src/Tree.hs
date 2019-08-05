@@ -1,6 +1,8 @@
 -- | This module contains an example of zippers for binary trees.
 module Tree where
 
+-- import qualified Data.Foldable as F
+
 import Text.PrettyPrint hiding ( isEmpty )
 
 -- -----------------------------------------------------------------------------
@@ -23,17 +25,23 @@ instance Functor Tree where
 --
 -- TODO: add doctest examples
 --
+-- TODO: implement F.Foldable
+--
 instance Foldable Tree where
   foldr _ y Empty        = y
   foldr f y (Node x r l) = f x (foldr f (foldr f y l) r)
+-- instance F.Foldable Tree where
+--   foldMap _ Empty        = mempty
+--   foldMap f (Node x r l) = F.foldMap f l `mappend`
+--                                      f x `mappend` F.foldMap f r
 
 -- | Alternative fold function.
 --
 -- TODO: add doctest examples
 --
-tfold :: (a -> b -> b -> b) -> b -> Tree a -> b
-tfold _ y Empty        = y
-tfold f y (Node x l r) = f x (tfold f y l) (tfold f y r)
+tfoldr :: (a -> b -> b -> b) -> b -> Tree a -> b
+tfoldr _ y Empty        = y
+tfoldr f y (Node x l r) = f x (tfoldr f y l) (tfoldr f y r)
 
 -- | Smart constructor for leaves.
 --
@@ -95,7 +103,8 @@ prettyZipper (t, c) =
                   $$ nest 2 (prettyTree t)
 
 -- | Helper function for pretty printing.
-prettyNode :: Show a =>
+prettyNode ::
+  Show a =>
   String -> (b -> Bool) -> (b -> Doc) -> (c -> Doc) -> a -> b -> c -> Doc
 prettyNode n e fl fr a l r =
   parens (text n <+> text v $$ nest indL (fl l) $$ nest indR (fr r))
@@ -142,6 +151,15 @@ data Context a = Hole
   deriving Eq
 
 -- | Type synonym for binary tree zippers.
+--
+-- Examples
+--
+-- >>> enter .> left .> update (+ 1) .> right .> update (+ 2) .> exit $ zeros 2
+-- (Node 0 (Node 1 (Node 0 Empty Empty)
+--                 (Node 2 Empty Empty))
+--         (Node 0 (Node 0 Empty Empty)
+--                 (Node 0 Empty Empty)))
+--
 type Zipper a = (Tree a, Context a)
 
 -- | Enter a zipper.
@@ -185,24 +203,3 @@ emptyError = error "tree is empty"
 -- | Error for attempting to focus on parent when context is hole.
 holeError :: a
 holeError = error "context is hole"
-
--- -----------------------------------------------------------------------------
--- Examples
-
--- | Examples of using zippers.
---
--- >>> t1
--- (Node 0 (Node 0 (Node 0 Empty Empty)
---                 (Node 0 Empty Empty))
---         (Node 0 (Node 0 Empty Empty)
---                 (Node 0 Empty Empty)))
---
--- >>> t2
--- (Node 0 (Node 1 (Node 0 Empty Empty)
---                 (Node 2 Empty Empty))
---         (Node 0 (Node 0 Empty Empty)
---                 (Node 0 Empty Empty)))
---
-t1, t2 :: Tree Int
-t1 = zeros 2
-t2 = enter .> left .> update (+ 1) .> right .> update (+ 2) .> exit $ t1
