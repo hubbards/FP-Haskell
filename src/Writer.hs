@@ -1,12 +1,19 @@
 -- | This module contains implementations of the writer monad and the writer
 -- monad transformer.
-module Writer where
+module Writer (
+    Writer (..)
+  , tell
+  , listen
+  , pass
+  , censor
+  , WriterT (..)
+  ) where
 
 import Prelude hiding (
-    Monoid(..)
-  , Functor(..)
-  , Applicative(..)
-  , Monad(..)
+    Monoid (..)
+  , Functor (..)
+  , Applicative (..)
+  , Monad (..)
   )
 
 import Monoid

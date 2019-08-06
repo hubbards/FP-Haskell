@@ -1,16 +1,25 @@
 -- | This module contains a type class for applicative functors.
-module Applicative where
+module Applicative (
+    Applicative (..)
+  , (<$>)
+  , liftA2
+  , sequenceA
+  ,  ZipList (..)
+  ) where
 
 import Prelude hiding (
-    Monoid(..)
-  , Functor(..)
-  , Applicative(..)
+    Monoid (..)
+  , Functor (..)
+  , Applicative (..)
   , (<$>)
   , sequenceA
   )
 
 import Monoid
 import Functor
+
+-- -----------------------------------------------------------------------------
+-- Applicative functors
 
 -- | Type class for applicative functors.
 --
@@ -47,11 +56,11 @@ class Functor t => Applicative t where
 (<$>) = fmap
 
 liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
-liftA2 f x y = f <$> x <*> y
+liftA2 f tx ty = f <$> tx <*> ty
 
 sequenceA :: Applicative t => [t a] -> t [a]
-sequenceA []       = pure []
-sequenceA (x : xs) = (:) <$> x <*> sequenceA xs
+sequenceA []         = pure []
+sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
 --sequenceA = foldr (liftA2 (:)) (pure [])
 
 -- -----------------------------------------------------------------------------

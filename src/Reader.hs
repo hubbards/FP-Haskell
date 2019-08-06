@@ -1,6 +1,11 @@
 -- | This module contains implementations of the reader monad and the reader
 -- monad transformer.
-module Reader where
+module Reader (
+    Reader (..)
+  , ask
+  , local
+  , ReaderT (..)
+  ) where
 
 import Prelude hiding (
     Functor(..)

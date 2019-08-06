@@ -3,22 +3,38 @@
 --
 -- TODO: lookup language extension for overriding do-notation
 --
-module Monad where
+module Monad (
+    Monad (..)
+  , join
+  , (>>)
+  , (=<<)
+  , liftM
+  , liftM2
+  , sequence
+  , mapM
+  , ap
+  , MonadPlus (..)
+  , MonadTrans (..)
+  , MaybeT (..)
+  ) where
 
 import Prelude hiding (
-    Monoid(..)
-  , Functor(..)
-  , Applicative(..)
-  , Monad(..)
+    Functor (..)
+  , Applicative (..)
+  , Monad (..)
   , sequence
+  , (=<<)
+  , mapM
   )
 
-import Monoid
 import Functor
 import Applicative
 
 infixl 1 >>=
 infixl 1 >>
+
+-- -----------------------------------------------------------------------------
+-- Monads
 
 -- | Type class for monads.
 --
@@ -49,38 +65,6 @@ class Applicative t => Monad t where
   -- Bind
   (>>=) :: t a -> (a -> t b) -> t b
 
--- | Type class for monads that are monoids.
---
--- Monoid laws:
---
--- prop> x `mplus` y `mplus` z = x `mplus` (y `mplus` z)
---
--- prop> mzero `mplus` x = x
---
--- prop> x `mplus` mzero = x
---
--- Failure propagation law:
---
--- prop> mzero >>= f = mzero
---
-class Monad t => MonadPlus t where
-  mzero :: t a
-  mplus :: t a -> t a -> t a
-
--- | Type class for monad transformers.
---
--- Identity law:
---
--- prop> lift . return = return
---
--- Distributivity law:
---
--- prop> lift (m >>= f) = lift m >>= (lift . f)
---
-class MonadTrans t where
-  -- Lift
-  lift :: Monad m => m a -> t m a
-
 -- -----------------------------------------------------------------------------
 -- Monad derived operations
 
@@ -110,6 +94,44 @@ ap :: Monad t => t (a -> b) -> t a -> t b
 ap tf tx = tf >>= \ f -> tx >>= return . f
 
 -- -----------------------------------------------------------------------------
+-- Monads that are monoids
+
+-- | Type class for monads that are monoids.
+--
+-- Monoid laws:
+--
+-- prop> x `mplus` y `mplus` z = x `mplus` (y `mplus` z)
+--
+-- prop> mzero `mplus` x = x
+--
+-- prop> x `mplus` mzero = x
+--
+-- Failure propagation law:
+--
+-- prop> mzero >>= f = mzero
+--
+class Monad t => MonadPlus t where
+  mzero :: t a
+  mplus :: t a -> t a -> t a
+
+-- -----------------------------------------------------------------------------
+-- Monad transformers
+
+-- | Type class for monad transformers.
+--
+-- Identity law:
+--
+-- prop> lift . return = return
+--
+-- Distributivity law:
+--
+-- prop> lift (m >>= f) = lift m >>= (lift . f)
+--
+class MonadTrans t where
+  -- Lift
+  lift :: Monad m => m a -> t m a
+
+-- -----------------------------------------------------------------------------
 -- Monad example instances
 
 instance Monad Maybe where
@@ -117,9 +139,9 @@ instance Monad Maybe where
   Just x  >>= f = f x
 
 instance Monad [] where
-  --(>>=) = flip concatMap
   []       >>= _ = []
   (x : xs) >>= f = f x ++ (xs >>= f)
+-- (>>=) = flip concatMap
 
 -- -----------------------------------------------------------------------------
 -- MonadPlus example instances
@@ -166,6 +188,6 @@ instance Monad m => MonadPlus (MaybeT m) where
   x `mplus` y =
     MaybeT $ runMaybeT x >>= \ m -> case m of
                                       Nothing -> return m
-                                      Just z  -> runMaybeT y
+                                      Just _  -> runMaybeT y
 
 -- TODO: add primatives / functions from Control.Monad.Trans.Maybe

@@ -1,10 +1,10 @@
 -- | This module contains implementations of the identity monad.
-module Identity where
+module Identity ( Identity (..) ) where
 
 import Prelude hiding (
-    Functor(..)
-  , Applicative(..)
-  , Monad(..)
+    Functor (..)
+  , Applicative (..)
+  , Monad (..)
   )
 
 import Functor

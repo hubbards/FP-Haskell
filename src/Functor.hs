@@ -1,7 +1,10 @@
 -- | This module contains a type class for functors.
-module Functor where
+module Functor ( Functor (..) ) where
 
-import Prelude hiding ( Functor(..) )
+import Prelude hiding ( Functor (..) )
+
+-- -----------------------------------------------------------------------------
+-- Functor
 
 -- | Type class for functors.
 --
@@ -16,6 +19,9 @@ import Prelude hiding ( Functor(..) )
 class Functor t where
   -- Map
   fmap :: (a -> b) -> t a -> t b
+
+-- -----------------------------------------------------------------------------
+-- Derived operations
 
 -- -----------------------------------------------------------------------------
 -- Example instances

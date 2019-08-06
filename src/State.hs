@@ -1,21 +1,27 @@
 -- | This module contains implementations of the state monad and the state monad
 -- transformer.
-module State where
+module State (
+    State (..)
+  , put
+  , get
+  , runState
+  , evalState
+  , execState
+  , StateT (..)
+  ) where
 
 import Prelude hiding (
-    Monoid(..)
-  , Functor(..)
-  , Applicative(..)
-  , Monad(..)
+    Functor (..)
+  , Applicative (..)
+  , Monad (..)
   )
 
-import Monoid
 import Functor
 import Applicative
 import Monad
 
 -- -----------------------------------------------------------------------------
--- State monad
+-- State monad data type and type class instances
 
 -- | Data type for effectful computation. The first type parameter represents a
 -- (side) effect type. The second type parameter represents a result type.
@@ -65,7 +71,7 @@ execState sc s = snd (runState sc s)
 -- TODO: add more primatives / functions from Control.Monad.Trans.State
 
 -- -----------------------------------------------------------------------------
--- State monad transformer
+-- State monad transformer data type and type class instances
 
 -- | Data type for state monad transformer. The first and last type parameters
 -- are the same as before and the second type parameter represents the inner

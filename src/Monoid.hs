@@ -1,9 +1,17 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 -- | This module contains a type class for monoids.
-module Monoid where
+module Monoid (
+    Monoid (..)
+  , mconcat
+  , Sum (..)
+  , Product (..)
+  , Any (..)
+  , All (..)
+  , First (..)
+  ) where
 
-import Prelude hiding ( Monoid(..) )
+import Prelude hiding ( Monoid (..) )
 
 -- | Type class for monoids.
 --
