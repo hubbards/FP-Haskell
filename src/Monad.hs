@@ -14,6 +14,7 @@ module Monad (
   , mapM
   , ap
   , MonadPlus (..)
+  , guard
   , MonadTrans (..)
   , MaybeT (..)
   ) where
@@ -113,6 +114,13 @@ ap tf tx = tf >>= \ f -> tx >>= return . f
 class Monad t => MonadPlus t where
   mzero :: t a
   mplus :: t a -> t a -> t a
+
+-- -----------------------------------------------------------------------------
+-- MonadPlus derived operations
+
+guard :: MonadPlus t => Bool -> t ()
+guard True  = return ()
+guard False = mzero
 
 -- -----------------------------------------------------------------------------
 -- Monad transformers
