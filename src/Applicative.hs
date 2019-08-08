@@ -4,6 +4,8 @@ module Applicative (
   , (<$>)
   , liftA2
   , sequenceA
+  , when
+  , unless
   ,  ZipList (..)
   ) where
 
@@ -62,6 +64,13 @@ sequenceA :: Applicative t => [t a] -> t [a]
 sequenceA []         = pure []
 sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
 --sequenceA = foldr (liftA2 (:)) (pure [])
+
+when :: Applicative t => Bool -> t () -> t ()
+when True  tx = tx
+when False _  = pure ()
+
+unless :: Applicative t => Bool -> t () -> t ()
+unless p = when (not p)
 
 -- -----------------------------------------------------------------------------
 -- Example instances
