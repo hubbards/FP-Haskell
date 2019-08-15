@@ -11,9 +11,16 @@ module Writer (
 
 import Prelude hiding (
     Monoid (..)
+  , mconcat
   , Functor (..)
   , Applicative (..)
+  , (<$>)
+  , sequenceA
   , Monad (..)
+  , sequence
+  , (=<<)
+  , (>>)
+  , mapM
   )
 
 import Monoid

@@ -22,9 +22,12 @@ module Monad (
 import Prelude hiding (
     Functor (..)
   , Applicative (..)
+  , sequenceA
+  , (<$>)
   , Monad (..)
   , sequence
   , (=<<)
+  , (>>)
   , mapM
   )
 
@@ -45,7 +48,7 @@ infixl 1 >>
 --
 -- Right identity law:
 --
--- prop> tx >>= return = return tx
+-- prop> tx >>= return = tx
 --
 -- Associativity:
 --
@@ -73,16 +76,19 @@ join :: Monad t => t (t a) -> t a
 join x = x >>= id
 
 (>>) :: Monad t => t a -> t b -> t b
-tx >> ty = tx >>= \ _ -> ty
+tx >> ty = tx >>= const ty
+-- tx >> ty = tx >>= \ _ -> ty
 
 (=<<) :: Monad t => (a -> t b) -> t a -> t b
 (=<<) = flip (>>=)
 
 liftM :: Monad t => (a -> b) -> t a -> t b
-liftM f tx = tx >>= return . f
+liftM = (<$>)
+-- liftM f tx = tx >>= return . f
 
 liftM2 :: Monad t => (a -> b -> c) -> t a -> t b -> t c
-liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
+liftM2 f tx ty = f <$> tx <*> ty
+-- liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
 
 sequence :: Monad t => [t a] -> t [a]
 sequence = foldr mcons (return []) where
@@ -92,7 +98,8 @@ mapM :: Monad t => (a -> t b) -> [a] -> t [b]
 mapM f = sequence . map f
 
 ap :: Monad t => t (a -> b) -> t a -> t b
-ap tf tx = tf >>= \ f -> tx >>= return . f
+ap = (<*>)
+-- ap tf tx = tf >>= \ f -> tx >>= return . f
 
 -- -----------------------------------------------------------------------------
 -- Monads that are monoids

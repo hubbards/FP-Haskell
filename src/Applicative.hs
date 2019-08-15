@@ -98,7 +98,7 @@ instance Applicative [] where
   fs <*> xs = [f x | f <- fs, x <- xs]
 
 newtype ZipList a = ZipList { getZipList :: [a] }
-  deriving ( Eq, Ord, Read, Show )
+  deriving (Eq, Ord, Read, Show)
 
 instance Applicative ZipList where
   pure = ZipList . repeat

@@ -4,7 +4,13 @@ module Identity ( Identity (..) ) where
 import Prelude hiding (
     Functor (..)
   , Applicative (..)
+  , sequenceA
+  , (<$>)
   , Monad (..)
+  , sequence
+  , (=<<)
+  , (>>)
+  , mapM
   )
 
 import Functor

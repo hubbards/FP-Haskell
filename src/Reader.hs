@@ -9,8 +9,14 @@ module Reader (
 
 import Prelude hiding (
     Functor(..)
-  , Applicative(..)
-  , Monad(..)
+  , Applicative (..)
+  , sequenceA
+  , (<$>)
+  , Monad (..)
+  , sequence
+  , (=<<)
+  , (>>)
+  , mapM
   )
 
 import Functor

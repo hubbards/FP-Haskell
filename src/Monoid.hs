@@ -11,7 +11,10 @@ module Monoid (
   , First (..)
   ) where
 
-import Prelude hiding ( Monoid (..) )
+import Prelude hiding (
+    Monoid (..)
+  , mconcat
+  )
 
 -- | Type class for monoids.
 --
@@ -43,10 +46,10 @@ mconcat = foldr mappend mempty
 -- Example instances
 
 newtype Sum a = Sum { getSum :: a }
-  deriving ( Eq, Ord, Bounded, Read, Show )
+  deriving (Eq, Ord, Bounded, Read, Show)
 
 newtype Product a = Product { getProduct :: a }
-  deriving ( Eq, Ord, Bounded, Read, Show )
+  deriving (Eq, Ord, Bounded, Read, Show)
 
 instance Num a => Monoid (Sum a) where
   mempty = Sum 0
@@ -62,10 +65,10 @@ instance Monoid Bool where
   x `mappend` y = x && not y || y && not x
 
 newtype Any = Any { getAny :: Bool }
-  deriving ( Eq, Ord, Bounded, Read, Show )
+  deriving (Eq, Ord, Bounded, Read, Show)
 
 newtype All = All { getAll :: Bool }
-  deriving ( Eq, Ord, Bounded, Read, Show )
+  deriving (Eq, Ord, Bounded, Read, Show)
 
 instance Monoid Any where
   mempty = Any False
@@ -88,7 +91,7 @@ instance Monoid a => Monoid (Maybe a) where
   Just x  `mappend` Just y  = Just (x `mappend` y)
 
 newtype First a = First { getFirst :: Maybe a }
-  deriving ( Eq, Ord, Read, Show )
+  deriving (Eq, Ord, Read, Show)
 
 instance Monoid (First a) where
   mempty = First Nothing
