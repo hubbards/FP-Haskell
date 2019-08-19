@@ -9,9 +9,9 @@ module Reader (
 
 import Prelude hiding (
     Functor(..)
+  , (<$>)
   , Applicative (..)
   , sequenceA
-  , (<$>)
   , Monad (..)
   , sequence
   , (=<<)

@@ -21,9 +21,9 @@ module Monad (
 
 import Prelude hiding (
     Functor (..)
+  , (<$>)
   , Applicative (..)
   , sequenceA
-  , (<$>)
   , Monad (..)
   , sequence
   , (=<<)
@@ -82,9 +82,13 @@ tx >> ty = tx >>= const ty
 (=<<) :: Monad t => (a -> t b) -> t a -> t b
 (=<<) = flip (>>=)
 
+-- | This function can be used to define `fmap` in a boilerplate `Functor`
+-- instance.
+--
+-- prop> liftM = fmap
+--
 liftM :: Monad t => (a -> b) -> t a -> t b
-liftM = (<$>)
--- liftM f tx = tx >>= return . f
+liftM f tx = tx >>= return . f
 
 liftM2 :: Monad t => (a -> b -> c) -> t a -> t b -> t c
 liftM2 f tx ty = f <$> tx <*> ty
@@ -97,9 +101,13 @@ sequence = foldr mcons (return []) where
 mapM :: Monad t => (a -> t b) -> [a] -> t [b]
 mapM f = sequence . map f
 
+-- | This function can be used to define `(<*>)` in a boilerplate `Applicative`
+-- instance.
+--
+-- prop> ap = (<*>)
+--
 ap :: Monad t => t (a -> b) -> t a -> t b
-ap = (<*>)
--- ap tf tx = tf >>= \ f -> tx >>= return . f
+ap tf tx = tf >>= \ f -> tx >>= return . f
 
 -- -----------------------------------------------------------------------------
 -- Monads that are monoids

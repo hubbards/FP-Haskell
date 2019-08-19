@@ -1,7 +1,13 @@
 -- | This module contains a type class for functors.
-module Functor ( Functor (..) ) where
+module Functor (
+    Functor (..)
+  , (<$>)
+  ) where
 
-import Prelude hiding ( Functor (..) )
+import Prelude hiding (
+    Functor (..)
+  , (<$>)
+  )
 
 -- -----------------------------------------------------------------------------
 -- Functor
@@ -22,6 +28,9 @@ class Functor t where
 
 -- -----------------------------------------------------------------------------
 -- Derived operations
+
+(<$>) :: Functor t => (a -> b) -> t a -> t b
+(<$>) = fmap
 
 -- -----------------------------------------------------------------------------
 -- Example instances

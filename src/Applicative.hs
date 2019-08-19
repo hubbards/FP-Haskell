@@ -1,7 +1,7 @@
 -- | This module contains a type class for applicative functors.
 module Applicative (
     Applicative (..)
-  , (<$>)
+  , liftA
   , liftA2
   , sequenceA
   , when
@@ -12,8 +12,8 @@ module Applicative (
 import Prelude hiding (
     Monoid (..)
   , Functor (..)
-  , Applicative (..)
   , (<$>)
+  , Applicative (..)
   , sequenceA
   )
 
@@ -43,7 +43,7 @@ import Functor
 --
 -- Relationship with functors:
 --
--- prop> fmap f x = pure f <*> x = f <$> x
+-- prop> fmap f tx = pure f <*> tx = f <$> tx
 --
 class Functor t => Applicative t where
   -- Inject
@@ -54,8 +54,13 @@ class Functor t => Applicative t where
 -- -----------------------------------------------------------------------------
 -- Derived operations
 
-(<$>) :: Functor t => (a -> b) -> t a -> t b
-(<$>) = fmap
+-- | This function can be used define `fmap` in a boilerplate `Functor`
+-- instance.
+--
+-- prop> liftA2 = fmap
+--
+liftA :: Applicative t => (a -> b) -> t a -> t b
+liftA f tx = pure f <*> tx
 
 liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
 liftA2 f tx ty = f <$> tx <*> ty
@@ -106,4 +111,4 @@ instance Applicative ZipList where
 
 -- Boilerplate
 instance Functor ZipList where
-  fmap = (<$>)
+  fmap = liftA

@@ -12,8 +12,8 @@ module State (
 
 import Prelude hiding (
     Functor (..)
-  , Applicative (..)
   , (<$>)
+  , Applicative (..)
   , sequenceA
   , Monad (..)
   , sequence

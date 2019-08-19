@@ -13,8 +13,8 @@ import Prelude hiding (
     Monoid (..)
   , mconcat
   , Functor (..)
-  , Applicative (..)
   , (<$>)
+  , Applicative (..)
   , sequenceA
   , Monad (..)
   , sequence
@@ -39,7 +39,6 @@ import Monad
 data Writer w a = W w a
 --type Writer w a = WriterT w Identity a
 
--- TODO: comment
 instance Monoid w => Monad (Writer w) where
   return = W mempty
   W s x >>= f = let W t y = f x in W (s `mappend` t) y
