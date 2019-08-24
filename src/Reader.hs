@@ -4,6 +4,7 @@ module Reader (
     Reader (..)
   , ask
   , local
+  , reader
   , ReaderT (..)
   ) where
 
@@ -54,11 +55,11 @@ instance Functor (Reader r) where
 ask :: Reader r r
 ask = R id
 
--- TODO: implement
 local :: (r -> r) -> Reader r a -> Reader r a
-local = undefined
+local f (R c) = R (c . f)
 
--- TODO: add more functions
+reader :: (r -> a) -> Reader r a
+reader = R
 
 -- -----------------------------------------------------------------------------
 -- Reader monad transformer data type and type class instances
