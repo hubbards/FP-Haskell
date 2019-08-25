@@ -13,8 +13,6 @@ import Prelude hiding (
   , mapM
   )
 
-import Functor
-import Applicative
 import Monad
 
 data Identity a = Identity { runIdentity :: a }

@@ -22,8 +22,6 @@ import Prelude hiding (
   , mapM
   )
 
-import Functor
-import Applicative
 import Monad
 
 -- -----------------------------------------------------------------------------

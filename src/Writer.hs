@@ -24,8 +24,6 @@ import Prelude hiding (
   )
 
 import Monoid
-import Functor
-import Applicative
 import Monad
 
 -- -----------------------------------------------------------------------------
@@ -52,11 +50,6 @@ instance Monoid w => Applicative (Writer w) where
 instance Monoid w => Functor (Writer w) where
   fmap = liftM
 
--- TODO: implement
-instance Monoid w => MonadPlus (Writer w) where
-  mzero = undefined
-  mplus = undefined
-
 -- -----------------------------------------------------------------------------
 -- Writer monad functions
 
@@ -74,8 +67,6 @@ pass = undefined
 -- TODO: implement
 censor :: (w -> w) -> Writer w a -> Writer w a
 censor = undefined
-
--- TODO: add more functions
 
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer data type and type class instances
