@@ -1,6 +1,6 @@
 -- | This module contains implementations of the reader monad and the reader
 -- monad transformer.
-module Reader (
+module FP.Control.Reader (
     Reader (..)
   , ask
   , local
@@ -20,7 +20,7 @@ import Prelude hiding (
   , mapM
   )
 
-import Monad
+import FP.Control.Monad
 
 -- -----------------------------------------------------------------------------
 -- Reader monad data type and type class instances

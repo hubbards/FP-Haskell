@@ -27,13 +27,13 @@ ghc-options: -Wall
 library:
   source-dirs: src
   exposed-modules:
-  - Identity
-  - Monad
-  - Monoid
-  - Reader
-  - State
-  - Tree
-  - Writer
+  - FP.Control.Identity
+  - FP.Control.Monad
+  - FP.Control.Monoid
+  - FP.Control.Reader
+  - FP.Control.State
+  - FP.Control.Writer
+  - FP.Data.Tree
 
 tests:
   tests:

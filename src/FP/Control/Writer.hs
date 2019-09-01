@@ -1,6 +1,6 @@
 -- | This module contains implementations of the writer monad and the writer
 -- monad transformer.
-module Writer (
+module FP.Control.Writer (
     Writer (..)
   , tell
   , listen
@@ -23,8 +23,8 @@ import Prelude hiding (
   , mapM
   )
 
-import Monoid
-import Monad
+import FP.Control.Monoid
+import FP.Control.Monad
 
 -- -----------------------------------------------------------------------------
 -- Writer monad data type and type class instances
