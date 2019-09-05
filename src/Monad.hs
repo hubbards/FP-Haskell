@@ -3,7 +3,7 @@
 --
 -- TODO: lookup language extension for overriding do-notation
 --
-module FP.Control.Monad (
+module Monad (
     Functor (..)
   , (<$>)
 
@@ -44,7 +44,7 @@ import Prelude hiding (
   , mapM
   )
 
-import FP.Control.Monoid
+import Monoid
 
 infixl 1 >>=
 infixl 1 >>

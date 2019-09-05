@@ -1,6 +1,6 @@
 -- | This module contains implementations of the state monad and the state monad
 -- transformer.
-module FP.Control.State (
+module State (
     State (..)
   , put
   , get
@@ -22,7 +22,7 @@ import Prelude hiding (
   , mapM
   )
 
-import FP.Control.Monad
+import Monad
 
 -- -----------------------------------------------------------------------------
 -- State monad data type and type class instances

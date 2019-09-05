@@ -1,5 +1,5 @@
 -- | This module contains implementations of the identity monad.
-module FP.Control.Identity ( Identity (..) ) where
+module Identity ( Identity (..) ) where
 
 import Prelude hiding (
     Functor (..)
@@ -13,7 +13,7 @@ import Prelude hiding (
   , mapM
   )
 
-import FP.Control.Monad
+import Monad
 
 data Identity a = Identity { runIdentity :: a }
 

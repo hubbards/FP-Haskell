@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 -- | This module contains a type class for monoids.
-module FP.Control.Monoid (
+module Monoid (
     Monoid (..)
   , mconcat
   , Sum (..)

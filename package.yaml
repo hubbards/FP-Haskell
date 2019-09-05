@@ -20,6 +20,8 @@ description: Please see the README on Github at <https://github.com/hubbards/fp-
 
 dependencies:
 - base >= 4.7 && < 5
+- mtl
+- transformers
 - pretty
 
 ghc-options: -Wall
@@ -27,13 +29,13 @@ ghc-options: -Wall
 library:
   source-dirs: src
   exposed-modules:
-  - FP.Control.Identity
-  - FP.Control.Monad
-  - FP.Control.Monoid
-  - FP.Control.Reader
-  - FP.Control.State
-  - FP.Control.Writer
-  - FP.Data.Tree
+  - Identity
+  - Monad
+  - Monoid
+  - Reader
+  - State
+  - Tree
+  - Writer
 
 tests:
   tests:

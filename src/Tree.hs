@@ -1,5 +1,5 @@
 -- | This module contains an example of zippers for binary trees.
-module FP.Data.Tree (
+module Tree (
     Tree (..)
   , tfoldr
   , leaf

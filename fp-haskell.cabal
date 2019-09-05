@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ee7d1cbdc6b6b70a7dd0255c064f8d90dea3379d7af2d1877286cac99d1aac79
+-- hash: 8cd4585a26702542338086c27171060b89a68427ce9f1eb0225000dda8ac3474
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -27,21 +27,25 @@ source-repository head
 
 library
   exposed-modules:
-      FP.Control.Identity
-      FP.Control.Monad
-      FP.Control.Monoid
-      FP.Control.Reader
-      FP.Control.State
-      FP.Control.Writer
-      FP.Data.Tree
+      Identity
+      Monad
+      Monoid
+      Reader
+      State
+      Tree
+      Writer
   other-modules:
+      DSL.Calculator
+      DSL.Stack
       Paths_fp_haskell
   hs-source-dirs:
       src
   ghc-options: -Wall
   build-depends:
       base >=4.7 && <5
+    , mtl
     , pretty
+    , transformers
   default-language: Haskell2010
 
 test-suite tests
@@ -56,5 +60,7 @@ test-suite tests
       base >=4.7 && <5
     , doctest >=0.8
     , fp-haskell
+    , mtl
     , pretty
+    , transformers
   default-language: Haskell2010
