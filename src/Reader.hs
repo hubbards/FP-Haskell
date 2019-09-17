@@ -8,19 +8,12 @@ module Reader (
   , ReaderT (..)
   ) where
 
-import Prelude hiding (
-    Functor(..)
-  , (<$>)
-  , Applicative (..)
-  , sequenceA
-  , Monad (..)
-  , sequence
-  , (=<<)
-  , (>>)
-  , mapM
+import Control.Monad (
+    ap
+  , liftM
   )
 
-import Monad
+import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
 -- Reader monad data type and type class instances

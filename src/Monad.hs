@@ -31,9 +31,7 @@ module Monad (
   ) where
 
 import Prelude hiding (
-    Monoid (..)
-  , mconcat
-  , Functor (..)
+    Functor (..)
   , (<$>)
   , Applicative (..)
   , sequenceA
@@ -44,10 +42,10 @@ import Prelude hiding (
   , mapM
   )
 
-import Monoid
-
 infixl 1 >>=
 infixl 1 >>
+
+-- TODO: fixity declarations for other operators
 
 -- -----------------------------------------------------------------------------
 -- Functors
@@ -56,11 +54,11 @@ infixl 1 >>
 --
 -- Identity law:
 --
--- prop> fmap id = id
+-- > fmap id = id
 --
 -- Map fusion law:
 --
--- prop> fmap (g . f) = fmap g . fmap f
+-- > fmap (g . f) = fmap g . fmap f
 --
 class Functor t where
   -- Map
@@ -71,180 +69,6 @@ class Functor t where
 
 (<$>) :: Functor t => (a -> b) -> t a -> t b
 (<$>) = fmap
-
--- -----------------------------------------------------------------------------
--- Applicative functors
-
--- | Type class for applicative functors.
---
--- Identity law:
---
--- prop> pure id <*> tx = tx
---
--- Homomorphism law:
---
--- prop> pure f <*> pure x = pure (f x)
---
--- Composition law:
---
--- prop> pure (.) <*> tu <*> tv <*> tw = tu <*> (tv <*> tw)
---
--- Application law:
---
--- prop> tf <*> pure x = pure ($ x) <*> tf
---
--- Relationship with functors:
---
--- prop> fmap f tx = pure f <*> tx = f <$> tx
---
-class Functor t => Applicative t where
-  -- Inject
-  pure :: a -> t a
-  -- Apply
-  (<*>) :: t (a -> b) -> t a -> t b
-
--- -----------------------------------------------------------------------------
--- Applicative derived operations
-
--- | This function can be used define `fmap` in a boilerplate `Functor`
--- instance.
---
--- prop> liftA2 = fmap
---
-liftA :: Applicative t => (a -> b) -> t a -> t b
-liftA f tx = pure f <*> tx
-
-liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
-liftA2 f tx ty = f <$> tx <*> ty
-
-sequenceA :: Applicative t => [t a] -> t [a]
-sequenceA []         = pure []
-sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
---sequenceA = foldr (liftA2 (:)) (pure [])
-
-when :: Applicative t => Bool -> t () -> t ()
-when True  tx = tx
-when False _  = pure ()
-
-unless :: Applicative t => Bool -> t () -> t ()
-unless p = when (not p)
-
--- -----------------------------------------------------------------------------
--- Monads
-
--- | Type class for monads.
---
--- Left identity law:
---
--- prop> return x >>= f = f x
---
--- Right identity law:
---
--- prop> tx >>= return = tx
---
--- Associativity:
---
--- prop> (tx >>= f) >>= g = tx >>= (\x -> f x >>= g)
---
--- Relationship with functors:
---
--- prop> fmap = liftM
---
--- Relationship with applicative functors:
---
--- prop> (<*>) = ap
---
-class Applicative t => Monad t where
-  -- Inject
-  return :: a -> t a
-  return = pure
-  -- Bind
-  (>>=) :: t a -> (a -> t b) -> t b
-
--- -----------------------------------------------------------------------------
--- Monad derived operations
-
-join :: Monad t => t (t a) -> t a
-join x = x >>= id
-
-(>>) :: Monad t => t a -> t b -> t b
-tx >> ty = tx >>= const ty
--- tx >> ty = tx >>= \ _ -> ty
-
-(=<<) :: Monad t => (a -> t b) -> t a -> t b
-(=<<) = flip (>>=)
-
--- | This function can be used to define `fmap` in a boilerplate `Functor`
--- instance.
---
--- prop> liftM = fmap
---
-liftM :: Monad t => (a -> b) -> t a -> t b
-liftM f tx = tx >>= return . f
-
-liftM2 :: Monad t => (a -> b -> c) -> t a -> t b -> t c
-liftM2 f tx ty = f <$> tx <*> ty
--- liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
-
-sequence :: Monad t => [t a] -> t [a]
-sequence = foldr mcons (return []) where
-  mcons tx txs = tx >>= \ x -> txs >>= \ xs -> return (x : xs)
-
-mapM :: Monad t => (a -> t b) -> [a] -> t [b]
-mapM f = sequence . map f
-
--- | This function can be used to define `(<*>)` in a boilerplate `Applicative`
--- instance.
---
--- prop> ap = (<*>)
---
-ap :: Monad t => t (a -> b) -> t a -> t b
-ap tf tx = tf >>= \ f -> tx >>= return . f
-
--- -----------------------------------------------------------------------------
--- Monads that are monoids
-
--- | Type class for monads that are monoids.
---
--- Monoid laws:
---
--- prop> x `mplus` y `mplus` z = x `mplus` (y `mplus` z)
---
--- prop> mzero `mplus` x = x
---
--- prop> x `mplus` mzero = x
---
--- Failure propagation law:
---
--- prop> mzero >>= f = mzero
---
-class Monad t => MonadPlus t where
-  mzero :: t a
-  mplus :: t a -> t a -> t a
-
--- -----------------------------------------------------------------------------
--- MonadPlus derived operations
-
-guard :: MonadPlus t => Bool -> t ()
-guard True  = return ()
-guard False = mzero
-
--- -----------------------------------------------------------------------------
--- Monad transformers
-
--- | Type class for monad transformers.
---
--- Identity law:
---
--- prop> lift . return = return
---
--- Distributivity law:
---
--- prop> lift (m >>= f) = lift m >>= (lift . f)
---
-class MonadTrans t where
-  -- Lift
-  lift :: Monad m => m a -> t m a
 
 -- -----------------------------------------------------------------------------
 -- Functor example instances
@@ -265,6 +89,64 @@ instance Functor ((->) a) where
 
 instance Functor [] where
   fmap = map
+
+-- -----------------------------------------------------------------------------
+-- Applicative functors
+
+-- | Type class for applicative functors.
+--
+-- Identity law:
+--
+-- > pure id <*> tx = tx
+--
+-- Homomorphism law:
+--
+-- > pure f <*> pure x = pure (f x)
+--
+-- Composition law:
+--
+-- > pure (.) <*> tu <*> tv <*> tw = tu <*> (tv <*> tw)
+--
+-- Application law:
+--
+-- > tf <*> pure x = pure ($ x) <*> tf
+--
+-- Relationship with functors:
+--
+-- > fmap f tx = pure f <*> tx = f <$> tx
+--
+class Functor t => Applicative t where
+  -- Inject
+  pure :: a -> t a
+  -- Apply
+  (<*>) :: t (a -> b) -> t a -> t b
+
+-- -----------------------------------------------------------------------------
+-- Applicative derived operations
+
+-- | This function can be used define `fmap` in a boilerplate `Functor`
+-- instance.
+--
+-- > liftA2 = fmap
+--
+liftA :: Applicative t => (a -> b) -> t a -> t b
+liftA f tx = pure f <*> tx
+
+liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
+liftA2 f tx ty = f <$> tx <*> ty
+
+sequenceA :: Applicative t => [t a] -> t [a]
+sequenceA []         = pure []
+sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
+--sequenceA = foldr (liftA2 (:)) (pure [])
+
+when :: Applicative t => Bool -> t () -> t ()
+when True  tx = tx
+when False _  = pure ()
+
+unless :: Applicative t => Bool -> t () -> t ()
+unless p = when (not p)
+
 
 -- -----------------------------------------------------------------------------
 -- Applicative example instances
@@ -303,6 +185,77 @@ instance Functor ZipList where
   fmap = liftA
 
 -- -----------------------------------------------------------------------------
+-- Monads
+
+-- | Type class for monads.
+--
+-- Left identity law:
+--
+-- > return x >>= f = f x
+--
+-- Right identity law:
+--
+-- > tx >>= return = tx
+--
+-- Associativity:
+--
+-- > (tx >>= f) >>= g = tx >>= (\x -> f x >>= g)
+--
+-- Relationship with functors:
+--
+-- > fmap = liftM
+--
+-- Relationship with applicative functors:
+--
+-- > (<*>) = ap
+--
+class Applicative t => Monad t where
+  -- Inject
+  return :: a -> t a
+  return = pure
+  -- Bind
+  (>>=) :: t a -> (a -> t b) -> t b
+
+-- -----------------------------------------------------------------------------
+-- Monad derived operations
+
+join :: Monad t => t (t a) -> t a
+join x = x >>= id
+
+(>>) :: Monad t => t a -> t b -> t b
+tx >> ty = tx >>= const ty
+
+(=<<) :: Monad t => (a -> t b) -> t a -> t b
+(=<<) = flip (>>=)
+
+-- | This function can be used to define `fmap` in a boilerplate `Functor`
+-- instance.
+--
+-- > liftM = fmap
+--
+liftM :: Monad t => (a -> b) -> t a -> t b
+liftM f tx = tx >>= return . f
+
+liftM2 :: Monad t => (a -> b -> c) -> t a -> t b -> t c
+liftM2 f tx ty = f <$> tx <*> ty
+-- liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
+
+sequence :: Monad t => [t a] -> t [a]
+sequence = foldr mcons (return []) where
+  mcons tx txs = tx >>= \ x -> txs >>= \ xs -> return (x : xs)
+
+mapM :: Monad t => (a -> t b) -> [a] -> t [b]
+mapM f = sequence . map f
+
+-- | This function can be used to define `(<*>)` in a boilerplate `Applicative`
+-- instance.
+--
+-- > ap = (<*>)
+--
+ap :: Monad t => t (a -> b) -> t a -> t b
+ap tf tx = tf >>= \ f -> tx >>= return . f
+
+-- -----------------------------------------------------------------------------
 -- Monad example instances
 
 instance Monad Maybe where
@@ -315,6 +268,34 @@ instance Monad [] where
 -- (>>=) = flip concatMap
 
 -- -----------------------------------------------------------------------------
+-- Monads that are monoids
+
+-- | Type class for monads that are monoids.
+--
+-- Monoid laws:
+--
+-- > x `mplus` y `mplus` z = x `mplus` (y `mplus` z)
+--
+-- > mzero `mplus` x = x
+--
+-- > x `mplus` mzero = x
+--
+-- Failure propagation law:
+--
+-- > mzero >>= f = mzero
+--
+class Monad t => MonadPlus t where
+  mzero :: t a
+  mplus :: t a -> t a -> t a
+
+-- -----------------------------------------------------------------------------
+-- MonadPlus derived operations
+
+guard :: MonadPlus t => Bool -> t ()
+guard True  = return ()
+guard False = mzero
+
+-- -----------------------------------------------------------------------------
 -- MonadPlus example instances
 
 instance MonadPlus Maybe where
@@ -325,6 +306,23 @@ instance MonadPlus Maybe where
 instance MonadPlus [] where
   mzero = []
   mplus = (++)
+
+-- -----------------------------------------------------------------------------
+-- Monad transformers
+
+-- | Type class for monad transformers.
+--
+-- Identity law:
+--
+-- > lift . return = return
+--
+-- Distributivity law:
+--
+-- > lift (m >>= f) = lift m >>= (lift . f)
+--
+class MonadTrans t where
+  -- Lift
+  lift :: Monad m => m a -> t m a
 
 -- -----------------------------------------------------------------------------
 -- MonadTrans example instances

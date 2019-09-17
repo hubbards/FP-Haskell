@@ -4,27 +4,21 @@ module Writer (
     Writer (..)
   , tell
   , listen
+  , listens
   , pass
   , censor
   , WriterT (..)
   ) where
 
-import Prelude hiding (
-    Monoid (..)
-  , mconcat
-  , Functor (..)
-  , (<$>)
-  , Applicative (..)
-  , sequenceA
-  , Monad (..)
-  , sequence
-  , (=<<)
-  , (>>)
-  , mapM
+import Control.Monad (
+    ap
+  , liftM
+  , MonadPlus (..)
   )
 
-import Monoid
-import Monad
+import Control.Applicative ( Alternative (..) )
+
+import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
 -- Writer monad data type and type class instances
@@ -34,12 +28,12 @@ import Monad
 -- logged.
 --
 -- In domain theory, this corresponds to a product domain.
-data Writer w a = W w a
+data Writer w a = W a w
 --type Writer w a = WriterT w Identity a
 
 instance Monoid w => Monad (Writer w) where
-  return = W mempty
-  W s x >>= f = let W t y = f x in W (s `mappend` t) y
+  return x = W x mempty
+  W x s >>= f = let W y t = f x in W y (s `mappend` t)
 
 -- Boilerplate
 instance Monoid w => Applicative (Writer w) where
@@ -54,19 +48,27 @@ instance Monoid w => Functor (Writer w) where
 -- Writer monad functions
 
 tell :: w -> Writer w ()
-tell s = W s ()
+tell = W ()
 
 -- TODO: implement
 listen :: Writer w a -> Writer w (a, w)
 listen = undefined
+-- listen (W x s) = W (x, s) s
+
+-- TODO: implement
+listens :: (w -> b) -> Writer w a -> Writer w (a, b)
+listens = undefined
+-- listens f (W x s) = W (x, f s) s
 
 -- TODO: implement
 pass :: Writer w (a, w -> w) -> Writer w a
 pass = undefined
+-- pass (W (x, f) s) = W x (f s)
 
 -- TODO: implement
 censor :: (w -> w) -> Writer w a -> Writer w a
 censor = undefined
+-- censor f (W x s) = W x (f s)
 
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer data type and type class instances
@@ -74,7 +76,7 @@ censor = undefined
 data WriterT w m a = WriterT { runWriterT :: m (a, w) }
 
 -- TODO: implement
-instance Monoid w => MonadTrans (WriterT w) where
+instance MonadTrans (WriterT w) where
   lift = undefined
 
 -- TODO: implement
@@ -90,6 +92,11 @@ instance (Monoid w, Monad m) => Applicative (WriterT w m) where
 -- Boilerplate
 instance (Monoid w, Monad m) => Functor (WriterT w m) where
   fmap = liftM
+
+-- TODO: implement
+instance (Monoid w, MonadPlus m) => Alternative (WriterT w m) where
+  empty = undefined
+  (<|>) = undefined
 
 instance (Monoid w, MonadPlus m) => MonadPlus (WriterT w m) where
   mzero = WriterT mzero

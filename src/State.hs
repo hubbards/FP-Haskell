@@ -10,19 +10,12 @@ module State (
   , StateT (..)
   ) where
 
-import Prelude hiding (
-    Functor (..)
-  , (<$>)
-  , Applicative (..)
-  , sequenceA
-  , Monad (..)
-  , sequence
-  , (=<<)
-  , (>>)
-  , mapM
+import Control.Monad (
+    ap
+  , liftM
   )
 
-import Monad
+import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
 -- State monad data type and type class instances
@@ -53,7 +46,7 @@ instance Functor (State s) where
 
 -- | Set current state.
 put :: s -> State s ()
-put s = S $ \ _ -> ((), s)
+put s = S $ const ((), s)
 
 -- | Get current state.
 get :: State s s
@@ -62,7 +55,7 @@ get = S $ \ s -> (s, s)
 -- | Run effectful computation with initial state and return effect and result
 -- of computation.
 runState :: State s a -> s -> (a, s)
-runState (S c) s = c s
+runState (S c) = c
 
 -- | Run effectful computation with initial state and return result.
 evalState :: State s a -> s -> a

@@ -20,15 +20,15 @@ import Prelude hiding (
 --
 -- Associativity law:
 --
--- prop> x `mappend` y `mappend` z = x `mappend` (y `mappend` z)
+-- > x `mappend` y `mappend` z = x `mappend` (y `mappend` z)
 --
 -- Left identity law:
 --
--- prop> mempty `mappend` x = x
+-- > mempty `mappend` x = x
 --
 -- Right identity law:
 --
--- prop> x `mappend` mempty = x
+-- > x `mappend` mempty = x
 --
 class Monoid a where
   -- Identity
