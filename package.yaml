@@ -20,22 +20,24 @@ description: Please see the README on Github at <https://github.com/hubbards/fp-
 
 dependencies:
 - base >= 4.7 && < 5
-- mtl
-- transformers
-- pretty
 
 ghc-options: -Wall
 
 library:
   source-dirs: src
   exposed-modules:
-  - Identity
+  - Calculator
   - Monad
   - Monoid
   - Reader
+  - Stack
   - State
   - Tree
   - Writer
+  dependencies:
+  - mtl
+  - transformers
+  - pretty
 
 tests:
   tests:
