@@ -519,7 +519,8 @@ data MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 -- TODO: quickcheck properties for typeclass laws
 --
 instance MonadTrans MaybeT where
-  lift m = MaybeT (m >>= return . Just)
+  lift m = MaybeT (Just <$> m)
+-- lift m = MaybeT (m >>= return . Just)
 
 -- | @Monad@ instance for @MaybeT m@.
 --
