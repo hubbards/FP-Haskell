@@ -4,7 +4,6 @@ module Writer (
     Writer (..)
   , tell
   , listen
-  , listens
   , pass
   , censor
   , WriterT (..)
@@ -54,11 +53,6 @@ tell = W ()
 listen :: Writer w a -> Writer w (a, w)
 listen = undefined
 -- listen (W x s) = W (x, s) s
-
--- TODO: implement
-listens :: (w -> b) -> Writer w a -> Writer w (a, b)
-listens = undefined
--- listens f (W x s) = W (x, f s) s
 
 -- TODO: implement
 pass :: Writer w (a, w -> w) -> Writer w a
