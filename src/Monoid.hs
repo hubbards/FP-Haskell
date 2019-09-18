@@ -102,7 +102,7 @@ instance Monoid [a] where
   mempty = []
   mappend = (++)
 
--- need FlexibleInstances language extension
+-- NOTE: need FlexibleInstances language extension
 instance Monoid (a -> a) where
   mempty = id
   mappend = (.)

@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
--- | This module contains deep-embedded DSL for a calculator language with two
+-- | This module contains a deep-embedded DSL for a calculator language with two
 -- integer registers.
 module Calculator where
 
@@ -32,21 +32,25 @@ data Exp = Lit Int        -- literal integer
 -- -----------------------------------------------------------------------------
 -- Semantics
 
--- | Type synonym for registers
+-- | Type synonym for register state
 type Reg = (Int, Int)
 
--- | Set first register value
+-- | Set value of first register
 --
 -- >>> set1 3 (1,2)
 -- (3,2)
 --
+-- NOTE: need TupleSections language extension
+--
 set1 :: Int -> Reg -> Reg
 set1 i = (i,) . snd
 
--- | Set second register value
+-- | Set value of second register
 --
 -- >>> set2 3 (1,2)
 -- (1,3)
+--
+-- NOTE: need TupleSections language extension
 --
 set2 :: Int -> Reg -> Reg
 set2 i = (,i) . fst
