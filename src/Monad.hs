@@ -76,7 +76,7 @@ class Functor t where
 -- -----------------------------------------------------------------------------
 -- Functor example instances
 
--- | @Maybe@ is a functor.
+-- | @Functor@ instance for @Maybe@.
 --
 -- >>> fmap (+ 1) (Just 2)
 -- Just 3
@@ -90,7 +90,7 @@ instance Functor Maybe where
   fmap _ Nothing  = Nothing
   fmap f (Just x) = Just (f x)
 
--- | @Either a@ is a functor.
+-- | @Functor@ instance for @Either a@.
 --
 -- >>> fmap (+ 1) (Right 2)
 -- Right 3
@@ -107,7 +107,7 @@ instance Functor (Either a) where
   fmap _ (Left x)  = Left x
   fmap f (Right x) = Right (f x)
 
--- | @(a, )@ is a functor.
+-- | @Functor@ instance for @(a, )@.
 --
 -- >>> fmap (+ 1) (2, 3)
 -- (2,4)
@@ -120,7 +120,7 @@ instance Functor (Either a) where
 instance Functor ((,) a) where
   fmap f (x, y) = (x, f y)
 
--- | @a -> @ is a functor.
+-- | @Functor@ instance for @a -> @.
 --
 -- >>> fmap (+ 1) (* 2) 3
 -- 7
@@ -130,7 +130,7 @@ instance Functor ((,) a) where
 instance Functor ((->) a) where
   fmap = (.)
 
--- | @[]@ is a functor.
+-- | @Functor@ instance for @[]@.
 --
 -- >>> fmap (+ 1) [1 .. 3]
 -- [2,3,4]
@@ -203,7 +203,7 @@ unless p = when (not p)
 -- -----------------------------------------------------------------------------
 -- Applicative example instances
 
--- | @Maybe@ is an applicative functor.
+-- | @Applicative@ instance for @Maybe@.
 --
 -- >>> pure 1 :: Maybe Int
 -- Just 1
@@ -227,7 +227,7 @@ instance Applicative Maybe where
   Nothing <*> _ = Nothing
   Just f  <*> m = fmap f m
 
--- | @Either a@ is an applicative functor.
+-- | @Applicative@ instance for @Either a@.
 --
 -- >>> pure 1 :: Either a Int
 -- Right 1
@@ -251,7 +251,7 @@ instance Applicative (Either a) where
   Left e  <*> _ = Left e
   Right f <*> e = fmap f e
 
--- | @(a, )@ is an applicative functor.
+-- | @Applicative@ instance for @(a, )@.
 --
 -- >>> pure 1 :: (Any, Int)
 -- (Any {getAny = False},1)
@@ -268,7 +268,7 @@ instance Monoid a => Applicative ((,) a) where
   pure x = (mempty, x)
   (x, f) <*> (y, z) = (x `mappend` y, f z)
 
--- | @a -> @ is an applicative functor.
+-- | @Applicative@ instance for @a -> @.
 --
 -- >>> pure 1 True
 -- 1
@@ -282,7 +282,7 @@ instance Applicative ((->) a) where
   pure = const
   f <*> g = \x -> f x (g x)
 
--- | @[]@ is an applicative functor.
+-- | @Applicative@ instance for @[]@.
 --
 -- >>> pure 1 :: [Int]
 -- [1]
@@ -299,7 +299,7 @@ instance Applicative [] where
 newtype ZipList a = ZipList { getZipList :: [a] }
   deriving (Eq, Ord, Read, Show)
 
--- | @ZipList@ is an applicative functor.
+-- | @Applicative@ instance for @ZipList@.
 --
 -- >>> take 3 . getZipList $ pure 1
 -- [1,1,1]
@@ -391,7 +391,7 @@ ap tf tx = tf >>= \ f -> tx >>= return . f
 -- -----------------------------------------------------------------------------
 -- Monad example instances
 
--- | @Maybe@ is a monad.
+-- | @Monad@ instance for @Maybe@.
 --
 -- >>> Just 1 >>= \ x -> Just (x + 2)
 -- Just 3
@@ -408,7 +408,7 @@ instance Monad Maybe where
   Nothing >>= _ = Nothing
   Just x  >>= f = f x
 
--- | @[]@ is a monad.
+-- | @Monad@ instance for @[]@.
 --
 -- >>> [1 .. 3] >>= \ x -> [x, x]
 -- [1,1,2,2,3,3]
@@ -457,7 +457,7 @@ guard False = mzero
 -- -----------------------------------------------------------------------------
 -- MonadPlus example instances
 
--- | @Maybe@ is a monad that is also a monoid.
+-- | @MonadPlus@ instance for @Maybe@.
 --
 -- >>> Just 1 `mplus` Just 2
 -- Just 1
@@ -472,7 +472,7 @@ instance MonadPlus Maybe where
   Just x  `mplus` _ = Just x
   Nothing `mplus` m = m
 
--- | @[]@ is a monad that is also a monoid.
+-- | @MonadPlus@ instance for @[]@.
 --
 -- >>> [1, 2] `mplus` [3, 4]
 -- [1,2,3,4]
@@ -512,7 +512,7 @@ class MonadTrans t where
 -- the inner monad.
 data MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 
--- | @MaybeT@ is a monad transformer.
+-- | @MonadTrans@ instance for @MaybeT@.
 --
 -- TODO: doctests
 --
@@ -521,7 +521,7 @@ data MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 instance MonadTrans MaybeT where
   lift m = MaybeT (m >>= return . Just)
 
--- | @MaybeT m@ is a monad.
+-- | @Monad@ instance for @MaybeT m@.
 --
 -- TODO: doctests
 --
@@ -543,7 +543,7 @@ instance Monad m => Applicative (MaybeT m) where
 instance Monad m => Functor (MaybeT m) where
   fmap = liftM
 
--- | @MaybeT m@ is a monad that is a monoid.
+-- | @MonadPlus@ instance for @MaybeT m@.
 --
 -- TODO: doctests
 --
