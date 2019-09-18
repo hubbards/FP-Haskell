@@ -29,6 +29,7 @@ library:
   - Calculator
   - Monad
   - Monoid
+  - Password
   - Reader
   - Stack
   - State

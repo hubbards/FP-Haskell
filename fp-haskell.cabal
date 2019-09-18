@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 16422d74fef75abd672b2042af604dd0fe3b9d9b3b60198088bf3634a06198f5
+-- hash: 2e24a23fc9d7185b64cb5eb4e5c508e2ecaf38f523269deb07abaf25dafbf03a
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Calculator
       Monad
       Monoid
+      Password
       Reader
       Stack
       State
