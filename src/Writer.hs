@@ -1,12 +1,14 @@
 -- | This module contains implementations of the writer monad and the writer
 -- monad transformer.
 module Writer (
-    Writer (..)
+    Writer
   , tell
   , listen
   , pass
   , censor
-  , WriterT (..)
+  , WriterT
+  , writerT
+  , runWriterT
   ) where
 
 import Control.Monad (
@@ -67,7 +69,7 @@ censor = undefined
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer data type and type class instances
 
-data WriterT w m a = WriterT { runWriterT :: m (a, w) }
+data WriterT w m a = WT (m (a, w))
 
 -- TODO: implement
 instance MonadTrans (WriterT w) where
@@ -93,10 +95,16 @@ instance (Monoid w, MonadPlus m) => Alternative (WriterT w m) where
   (<|>) = undefined
 
 instance (Monoid w, MonadPlus m) => MonadPlus (WriterT w m) where
-  mzero = WriterT mzero
-  x `mplus` y = WriterT $ runWriterT x `mplus` runWriterT y
+  mzero = WT mzero
+  x `mplus` y = WT $ runWriterT x `mplus` runWriterT y
 
 -- -----------------------------------------------------------------------------
--- Writer monad transformer functions (from Control.Monad.Trans.Writer)
+-- Writer monad transformer functions
 
--- TODO: add primatives / functions
+writerT :: (Monoid w, Monad m) => m (a, w) -> WriterT w m a
+writerT = WT
+
+runWriterT :: WriterT w m a -> m (a, w)
+runWriterT (WT x) = x
+
+-- TODO: add primatives / functions (from Control.Monad.Trans.Writer)
