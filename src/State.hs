@@ -1,13 +1,16 @@
 -- | This module contains implementations of the state monad and the state monad
 -- transformer.
 module State (
-    State (..)
+    State
+  , state
+  , runState
   , put
   , get
-  , runState
   , evalState
   , execState
-  , StateT (..)
+  , StateT
+  , stateT
+  , runStateT
   ) where
 
 import Control.Monad (
@@ -30,7 +33,7 @@ data State s a = S (s -> (a, s))
 
 instance Monad (State s) where
   return x = S $ \ s -> (x, s)
-  S c >>= f = S $ \ s -> let (x, t) = c s; S d = f x in d t
+  S c >>= f = S $ \ s -> let (x, s') = c s; S c' = f x in c' s'
 
 -- Boilerplate
 instance Applicative (State s) where
@@ -44,6 +47,14 @@ instance Functor (State s) where
 -- -----------------------------------------------------------------------------
 -- State monad functions
 
+state :: (s -> (a, s)) -> State s a
+state = S
+
+-- | Run effectful computation with initial state and return effect and result
+-- of computation.
+runState :: State s a -> s -> (a, s)
+runState (S c) = c
+
 -- | Set current state.
 put :: s -> State s ()
 put s = S $ const ((), s)
@@ -51,11 +62,6 @@ put s = S $ const ((), s)
 -- | Get current state.
 get :: State s s
 get = S $ \ s -> (s, s)
-
--- | Run effectful computation with initial state and return effect and result
--- of computation.
-runState :: State s a -> s -> (a, s)
-runState (S c) = c
 
 -- | Run effectful computation with initial state and return result.
 evalState :: State s a -> s -> a
@@ -73,14 +79,14 @@ execState sc s = snd (runState sc s)
 -- | Data type for state monad transformer. The first and last type parameters
 -- are the same as before and the second type parameter represents the inner
 -- monad.
-data StateT s m a = StateT { runStateT :: s -> m (a, s) }
+data StateT s m a = ST (s -> m (a, s))
 
 instance MonadTrans (StateT s) where
-  lift m = StateT $ \ s -> m >>= \ a -> return (a, s)
+  lift x = ST $ \ s -> x >>= \ y -> return (y, s)
 
 instance Monad m => Monad (StateT s m) where
-  return x = StateT $ \ s -> return (x, s)
-  StateT c >>= f = StateT $ \s -> c s >>= \ (x, t) -> let StateT d = f x in d t
+  return x = ST $ \ s -> return (x, s)
+  ST c >>= f = ST $ \ s -> c s >>= \ (x, s') -> let ST c' = f x in c' s'
 
 -- Boilerplate
 instance Monad m => Applicative (StateT s m) where
@@ -94,4 +100,10 @@ instance Monad m => Functor (StateT s m) where
 -- -----------------------------------------------------------------------------
 -- State monad transformer functions
 
--- TODO: add primatives / functions from Control.Monad.Trans.State
+stateT :: Monad m => (s -> m (a, s)) -> StateT s m a
+stateT = ST
+
+runStateT :: StateT s m a -> s -> m (a, s)
+runStateT (ST c) = c
+
+-- TODO: add primatives / functions (from Control.Monad.Trans.State)
