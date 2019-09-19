@@ -7,7 +7,8 @@
 
 # Disable syntax sugar
 - ignore: {name: "Use lambda-case"}
-- ignore: {name: "Use tuple-section", within: [Monad]}
+- ignore: {name: "Use tuple-section"}
+- ignore: {name: "Use newtype instead of data"}
 
 # Specify additional command line arguments
 - arguments: [--color]
