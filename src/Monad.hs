@@ -27,7 +27,9 @@ module Monad (
   , MonadPlus (..)
   , guard
   , MonadTrans (..)
-  , MaybeT (..)
+  , MaybeT
+  , maybeT
+  , runMaybeT
   ) where
 
 import Prelude hiding (
@@ -510,7 +512,7 @@ class MonadTrans t where
 
 -- | Data type for maybe monad transformer. The first type parameter represents
 -- the inner monad.
-data MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
+data MaybeT m a = MT (m (Maybe a))
 
 -- | @MonadTrans@ instance for @MaybeT@.
 --
@@ -519,8 +521,8 @@ data MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 -- TODO: quickcheck properties for typeclass laws
 --
 instance MonadTrans MaybeT where
-  lift m = MaybeT (Just <$> m)
--- lift m = MaybeT (m >>= return . Just)
+  lift m = MT (Just <$> m)
+-- lift m = MT (m >>= return . Just)
 
 -- | @Monad@ instance for @MaybeT m@.
 --
@@ -529,11 +531,11 @@ instance MonadTrans MaybeT where
 -- TODO: quickcheck properties for typeclass laws
 --
 instance Monad m => Monad (MaybeT m) where
-  return = MaybeT . return . Just
+  return = MT . return . Just
   x >>= f =
-    MaybeT $ runMaybeT x >>= \ m -> case m of
-                                      Nothing -> return Nothing
-                                      Just y  -> runMaybeT (f y)
+    MT $ runMaybeT x >>= \ y -> case y of
+                                  Nothing -> return Nothing
+                                  Just z  -> runMaybeT (f z)
 
 -- Boilerplate
 instance Monad m => Applicative (MaybeT m) where
@@ -551,10 +553,16 @@ instance Monad m => Functor (MaybeT m) where
 -- TODO: quickcheck properties for typeclass laws
 --
 instance Monad m => MonadPlus (MaybeT m) where
-  mzero = MaybeT (return Nothing)
+  mzero = MT (return Nothing)
   x `mplus` y =
-    MaybeT $ runMaybeT x >>= \ m -> case m of
-                                      Nothing -> return m
-                                      Just _  -> runMaybeT y
+    MT $ runMaybeT x >>= \ z -> case z of
+                                  Nothing -> runMaybeT y
+                                  Just _  -> return z
 
--- TODO: add primatives / functions from Control.Monad.Trans.Maybe
+maybeT :: Monad m => m (Maybe a) -> MaybeT m a
+maybeT = MT
+
+runMaybeT :: MaybeT m a -> m (Maybe a)
+runMaybeT (MT x) = x
+
+-- TODO: add primatives / functions (from Control.Monad.Trans.Maybe)
