@@ -1,11 +1,14 @@
 -- | This module contains implementations of the reader monad and the reader
 -- monad transformer.
 module Reader (
-    Reader (..)
+    Reader
+  , reader
+  , runReader
   , ask
   , local
-  , reader
-  , ReaderT (..)
+  , ReaderT
+  , readerT
+  , runReaderT
   ) where
 
 import Control.Monad (
@@ -43,14 +46,17 @@ instance Functor (Reader r) where
 -- -----------------------------------------------------------------------------
 -- Reader monad functions
 
+reader :: (r -> a) -> Reader r a
+reader = R
+
+runReader :: Reader r a -> r -> a
+runReader (R c) = c
+
 ask :: Reader r r
 ask = R id
 
 local :: (r -> r) -> Reader r a -> Reader r a
 local f (R c) = R (c . f)
-
-reader :: (r -> a) -> Reader r a
-reader = R
 
 -- -----------------------------------------------------------------------------
 -- Reader monad transformer data type and type class instances
@@ -58,14 +64,14 @@ reader = R
 -- | Data type for reader monad transformer. The first and last type parameters
 -- are the same as before and the second type parameter represents the inner
 -- monad.
-data ReaderT r m a = ReaderT { runReaderT :: r -> m a }
+data ReaderT r m a = RT (r -> m a)
 
 instance MonadTrans (ReaderT r) where
-  lift m = ReaderT (const m)
+  lift m = RT (const m)
 
 instance Monad m => Monad (ReaderT r m) where
   return = lift . return
-  ReaderT c >>= f = ReaderT $ \ r -> c r >>= \ x -> let ReaderT d = f x in d r
+  RT c >>= f = RT $ \ r -> c r >>= \ x -> let RT d = f x in d r
 
 -- Boilerplate
 instance Monad m => Applicative (ReaderT r m) where
@@ -77,6 +83,12 @@ instance Monad m => Functor (ReaderT r m) where
   fmap = liftM
 
 -- -----------------------------------------------------------------------------
--- Reader monad transformer functions (from Control.Monad.Trans.Reader)
+-- Reader monad transformer functions
 
--- TODO: add primatives / functions from Control.Monad.Trans.Reader
+readerT :: Monad m => (r -> m a) -> ReaderT r m a
+readerT = RT
+
+runReaderT :: ReaderT r m a -> r -> m a
+runReaderT (RT c) = c
+
+-- TODO: add primatives / functions (from Control.Monad.Trans.Reader)
