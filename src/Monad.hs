@@ -27,7 +27,7 @@ module Monad (
   , MonadPlus (..)
   , guard
   , MonadTrans (..)
-  , MaybeT
+  , MaybeT (..)
   , maybeT
   , runMaybeT
   ) where
@@ -43,9 +43,6 @@ import Prelude hiding (
   , (>>)
   , mapM
   )
-
--- $setup
--- >>> import Data.Monoid ( Sum (..), Any (..) )
 
 infixl 1 >>=
 infixl 1 >>
@@ -78,70 +75,20 @@ class Functor t where
 -- -----------------------------------------------------------------------------
 -- Functor example instances
 
--- | @Functor@ instance for @Maybe@.
---
--- >>> fmap (+ 1) (Just 2)
--- Just 3
---
--- >>> fmap (+ 1) Nothing
--- Nothing
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Functor Maybe where
   fmap _ Nothing  = Nothing
   fmap f (Just x) = Just (f x)
 
--- | @Functor@ instance for @Either a@.
---
--- >>> fmap (+ 1) (Right 2)
--- Right 3
---
--- >>> fmap (+ 1) (Left 2)
--- Left 2
---
--- >>> fmap (+ 1) (Left True)
--- Left True
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Functor (Either a) where
   fmap _ (Left x)  = Left x
   fmap f (Right x) = Right (f x)
 
--- | @Functor@ instance for @(a, )@.
---
--- >>> fmap (+ 1) (2, 3)
--- (2,4)
---
--- >>> fmap (+ 1) (True, 2)
--- (True,3)
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Functor ((,) a) where
   fmap f (x, y) = (x, f y)
 
--- | @Functor@ instance for @a -> @.
---
--- >>> fmap (+ 1) (* 2) 3
--- 7
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Functor ((->) a) where
   fmap = (.)
 
--- | @Functor@ instance for @[]@.
---
--- >>> fmap (+ 1) [1 .. 3]
--- [2,3,4]
---
--- >>> fmap (+ 1) []
--- []
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Functor [] where
   fmap = map
 
@@ -205,95 +152,24 @@ unless p = when (not p)
 -- -----------------------------------------------------------------------------
 -- Applicative example instances
 
--- | @Applicative@ instance for @Maybe@.
---
--- >>> pure 1 :: Maybe Int
--- Just 1
---
--- >>> Just (+ 1) <*> Just 2
--- Just 3
---
--- >>> Just (+ 1) <*> Nothing
--- Nothing
---
--- >>> Nothing <*> Just 2
--- Nothing
---
--- >>> Nothing <*> Nothing
--- Nothing
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Applicative Maybe where
   pure = Just
   Nothing <*> _ = Nothing
   Just f  <*> m = fmap f m
 
--- | @Applicative@ instance for @Either a@.
---
--- >>> pure 1 :: Either a Int
--- Right 1
---
--- >>> Right (+ 1) <*> Right 2
--- Right 3
---
--- >>> Right (+ 1) <*> Left 2
--- Left 2
---
--- >>> Right (+ 1) <*> Left True
--- Left True
---
--- >>> Left True <*> Right 2
--- Left True
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Applicative (Either a) where
   pure = Right
   Left e  <*> _ = Left e
   Right f <*> e = fmap f e
 
--- | @Applicative@ instance for @(a, )@.
---
--- >>> pure 1 :: (Any, Int)
--- (Any {getAny = False},1)
---
--- >>> (Sum 1, (+ 1)) <*> (Sum 2, 3)
--- (Sum {getSum = 3},4)
---
--- >>> (Any True, (+ 1)) <*> (Any False, 2)
--- (Any {getAny = True},3)
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Monoid a => Applicative ((,) a) where
   pure x = (mempty, x)
   (x, f) <*> (y, z) = (x `mappend` y, f z)
 
--- | @Applicative@ instance for @a -> @.
---
--- >>> pure 1 True
--- 1
---
--- >>> (+) <*> (* 2) $ 1
--- 3
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Applicative ((->) a) where
   pure = const
   f <*> g = \x -> f x (g x)
 
--- | @Applicative@ instance for @[]@.
---
--- >>> pure 1 :: [Int]
--- [1]
---
--- >>> [(+ 1), (* 2)] <*> [1 .. 3]
--- [2,3,4,2,4,6]
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Applicative [] where
   pure x = [x]
   fs <*> xs = [f x | f <- fs, x <- xs]
@@ -301,16 +177,6 @@ instance Applicative [] where
 newtype ZipList a = ZipList { getZipList :: [a] }
   deriving (Eq, Ord, Read, Show)
 
--- | @Applicative@ instance for @ZipList@.
---
--- >>> take 3 . getZipList $ pure 1
--- [1,1,1]
---
--- >>> getZipList $ ZipList [(+ 1), (* 2)] <*> ZipList [1 .. 3]
--- [2,4]
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Applicative ZipList where
   pure = ZipList . repeat
   ZipList fs <*> ZipList xs = ZipList $ zipWith ($) fs xs
@@ -393,36 +259,10 @@ ap tf tx = tf >>= \ f -> tx >>= return . f
 -- -----------------------------------------------------------------------------
 -- Monad example instances
 
--- | @Monad@ instance for @Maybe@.
---
--- >>> Just 1 >>= \ x -> Just (x + 2)
--- Just 3
---
--- >>> Nothing >>= \ x -> Just (x + 2)
--- Nothing
---
--- >>> return 1 :: Maybe Int
--- Just 1
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Monad Maybe where
   Nothing >>= _ = Nothing
   Just x  >>= f = f x
 
--- | @Monad@ instance for @[]@.
---
--- >>> [1 .. 3] >>= \ x -> [x, x]
--- [1,1,2,2,3,3]
---
--- >>> [] >>= \ x -> [x, x]
--- []
---
--- >>> return 1 :: [Int]
--- [1]
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Monad [] where
   []       >>= _ = []
   (x : xs) >>= f = f x ++ (xs >>= f)
@@ -459,31 +299,11 @@ guard False = mzero
 -- -----------------------------------------------------------------------------
 -- MonadPlus example instances
 
--- | @MonadPlus@ instance for @Maybe@.
---
--- >>> Just 1 `mplus` Just 2
--- Just 1
---
--- >>> mzero :: Maybe a
--- Nothing
---
--- TODO: quickcheck properties for typeclass laws
---
 instance MonadPlus Maybe where
   mzero = Nothing
   Just x  `mplus` _ = Just x
   Nothing `mplus` m = m
 
--- | @MonadPlus@ instance for @[]@.
---
--- >>> [1, 2] `mplus` [3, 4]
--- [1,2,3,4]
---
--- >>> mzero :: [a]
--- []
---
--- TODO: quickcheck properties for typeclass laws
---
 instance MonadPlus [] where
   mzero = []
   mplus = (++)
@@ -514,28 +334,16 @@ class MonadTrans t where
 -- the inner monad.
 data MaybeT m a = MT (m (Maybe a))
 
--- | @MonadTrans@ instance for @MaybeT@.
---
--- TODO: doctests
---
--- TODO: quickcheck properties for typeclass laws
---
 instance MonadTrans MaybeT where
   lift m = MT (Just <$> m)
 -- lift m = MT (m >>= return . Just)
 
--- | @Monad@ instance for @MaybeT m@.
---
--- TODO: doctests
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Monad m => Monad (MaybeT m) where
   return = MT . return . Just
-  x >>= f =
-    MT $ runMaybeT x >>= \ y -> case y of
-                                  Nothing -> return Nothing
-                                  Just z  -> runMaybeT (f z)
+  (MT x) >>= f =
+    MT $ x >>= \ y -> case y of
+                        Nothing -> return Nothing
+                        Just z  -> runMaybeT (f z)
 
 -- Boilerplate
 instance Monad m => Applicative (MaybeT m) where
@@ -546,18 +354,12 @@ instance Monad m => Applicative (MaybeT m) where
 instance Monad m => Functor (MaybeT m) where
   fmap = liftM
 
--- | @MonadPlus@ instance for @MaybeT m@.
---
--- TODO: doctests
---
--- TODO: quickcheck properties for typeclass laws
---
 instance Monad m => MonadPlus (MaybeT m) where
   mzero = MT (return Nothing)
-  x `mplus` y =
-    MT $ runMaybeT x >>= \ z -> case z of
-                                  Nothing -> runMaybeT y
-                                  Just _  -> return z
+  (MT x) `mplus` (MT y) =
+    MT $ x >>= \ z -> case z of
+                        Nothing -> y
+                        Just _  -> return z
 
 maybeT :: Monad m => m (Maybe a) -> MaybeT m a
 maybeT = MT

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2e24a23fc9d7185b64cb5eb4e5c508e2ecaf38f523269deb07abaf25dafbf03a
+-- hash: ab8115fb2f08d32839fce72ef231c50e9424bf611f39da7e9e7db01bb772d9cf
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -40,7 +40,6 @@ library
       Paths_fp_haskell
   hs-source-dirs:
       src
-  ghc-options: -Wall
   build-depends:
       base >=4.7 && <5
     , mtl
@@ -52,12 +51,13 @@ test-suite tests
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      MonadTest
       Paths_fp_haskell
   hs-source-dirs:
       test
-  ghc-options: -Wall
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , base >=4.7 && <5
     , doctest >=0.8
     , fp-haskell
   default-language: Haskell2010

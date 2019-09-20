@@ -21,7 +21,7 @@ description: Please see the README on Github at <https://github.com/hubbards/fp-
 dependencies:
 - base >= 4.7 && < 5
 
-ghc-options: -Wall
+#ghc-options: -Wall
 
 library:
   source-dirs: src
@@ -47,3 +47,4 @@ tests:
     dependencies:
     - fp-haskell
     - doctest >= 0.8
+    - HUnit
