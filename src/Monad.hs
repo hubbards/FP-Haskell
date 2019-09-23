@@ -223,6 +223,10 @@ class Applicative t => Monad t where
 -- -----------------------------------------------------------------------------
 -- Monad derived operations
 
+-- | Flatten a monadic value within a monadic value.
+--
+-- > m >>= f = join (fmap f m)
+--
 join :: Monad t => t (t a) -> t a
 join x = x >>= id
 
