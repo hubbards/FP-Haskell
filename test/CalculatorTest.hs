@@ -12,10 +12,8 @@ import Calculator
 tests :: [Test]
 tests =
   [ "state" ~:
-    [ "set1" ~:
-      [ (3, 2) @=? set1 3 (1, 2) ]
-    , "set2" ~:
-      [ (1, 3) @=? set2 3 (1, 2) ] ]
+    [ "set1" ~: (3, 2) @=? set1 3 (1, 2)
+    , "set2" ~: (1, 3) @=? set2 3 (1, 2) ]
   , "semantics" ~:
     [ (1, (-1, 0)) @=? eval (Add (Lit 2) (Save1 $ Neg $ Lit 1))
     , (3, (1, 2))  @=? eval (Add (Save1 $ Lit 1) (Save2 $ Lit 2))

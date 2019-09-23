@@ -5,6 +5,7 @@ import Test.HUnit (
   , Assertion
   , (~:)
   , (@=?)
+  , (@?)
   , test
   )
 import Tree
@@ -13,17 +14,17 @@ tests :: [Test]
 tests =
   [ "basic functions" ~:
     [ "leaf" ~:
-      [ Node 1 Empty Empty @=? leaf 1
+      [ Node 1 Empty Empty    @=? leaf 1
       , Node True Empty Empty @=? leaf True ]
     , "zeros" ~:
-      [ leaf 0 @=? zeros 0
+      [ leaf 0                   @=? zeros 0
       , Node 0 (leaf 0) (leaf 0) @=? zeros 1 ]
     , "isEmpty" ~:
-      [ True  @=? isEmpty Empty
-      , False @=? isEmpty (leaf 1) ] ]
+      [ isEmpty Empty    @? "Empty"
+      , isEmpty (leaf 1) @? "Non-empty" ] ]
   , "zipper functions" ~:
     [ "isHole" ~:
-      [ True  @=? isHole Hole
-      , False @=? isHole (L 1 Hole Empty) ]
+      [ isHole Hole                   @? "Hole"
+      , not (isHole $ L 1 Hole Empty) @? "Non-hole" ]
     -- TODO: more zipper unit tests
     ] ]
