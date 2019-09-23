@@ -1,11 +1,15 @@
-import Test.DocTest ( doctest )
 import Test.HUnit (
     Counts
   , runTestTT
+  , test
+  , (~:)
   )
-import MonadTest ( tests )
+import qualified CalculatorTest
+import qualified MonadTest
+import qualified TreeTest
 
 main :: IO Counts
-main = do
-  doctest [ "src/Calculator.hs", "src/Tree.hs" ]
-  runTestTT tests
+main = runTestTT . test $
+  [ "Calculator" ~: CalculatorTest.tests
+  , "Monad"      ~: MonadTest.tests
+  , "Tree"       ~: TreeTest.tests ]

@@ -29,19 +29,11 @@ data Tree a = Empty
   deriving Eq
 
 -- | Functor instance for binary trees.
---
--- TODO: add doctest examples
---
 instance Functor Tree where
   fmap _ Empty        = Empty
   fmap f (Node x l r) = Node (f x) (fmap f l) (fmap f r)
 
 -- | Foldable instance for binary trees.
---
--- TODO: add doctest examples
---
--- TODO: implement F.Foldable
---
 instance Foldable Tree where
   foldr _ y Empty        = y
   foldr f y (Node x r l) = f x (foldr f (foldr f y l) r)
@@ -50,37 +42,15 @@ instance Foldable Tree where
 -- Binary tree functions
 
 -- | Alternative fold function.
---
--- TODO: add doctest examples
---
 tfoldr :: (a -> b -> b -> b) -> b -> Tree a -> b
 tfoldr _ y Empty        = y
 tfoldr f y (Node x l r) = f x (tfoldr f y l) (tfoldr f y r)
 
 -- | Smart constructor for leaves.
---
--- Examples
---
--- >>> leaf 1
--- (Node 1 Empty Empty)
---
--- >>> leaf True
--- (Node True Empty Empty)
---
 leaf :: a -> Tree a
 leaf x = Node x Empty Empty
 
 -- | Constructs a perfect binary tree of a given height with all zeros.
---
--- Examples
---
--- >>> zeros 0
--- (Node 0 Empty Empty)
---
--- >>> zeros 1
--- (Node 0 (Node 0 Empty Empty)
---         (Node 0 Empty Empty))
---
 zeros :: Int -> Tree Int
 zeros n
   | n < 0     = error $ "negative height: " ++ show n
@@ -88,15 +58,6 @@ zeros n
   | otherwise = let t = zeros (n - 1) in Node 0 t t
 
 -- | Checks if a given tree is empty.
---
--- Examples
---
--- >>> isEmpty Empty
--- True
---
--- >>> isEmpty (leaf 1)
--- False
---
 isEmpty :: Tree a -> Bool
 isEmpty Empty = True
 isEmpty _     = False
@@ -123,15 +84,6 @@ data Context a = Hole
   deriving Eq
 
 -- | Checks if a given zipper context is a hole.
---
--- Examples
---
--- >>> isHole Hole
--- True
---
--- >>> isHole (L 1 Hole Empty)
--- False
---
 isHole :: Context a -> Bool
 isHole Hole = True
 isHole _    = False

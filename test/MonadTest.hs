@@ -58,9 +58,9 @@ prop_applicativeFunctor f tx = fmap f tx == pure f <*> tx
 
 -- TODO: add properties
 
-tests :: Test
-tests = test
-  [ "Functor"     ~:
+tests :: [Test]
+tests =
+  [ "Functor" ~:
     [ "Maybe" ~:
       [ Just 3  @=? fmap (+ 1) (Just 2)
       , Nothing @=? fmap (+ 1) Nothing ]
@@ -105,7 +105,7 @@ tests = test
       [ [1, 1, 1]      @=? (take 3 . getZipList . pure) 1
       , ZipList [2, 4] @=? ZipList [(+ 1), (* 2)] <*> ZipList [1 .. 3] ] ]
 
-  , "Monad"       ~:
+  , "Monad" ~:
     [ "Maybe" ~:
       [ Just 1  @=? (return 1 :: Maybe Int)
       , Just 3  @=? (Just 1 >>= Just . (+ 2))
@@ -121,7 +121,7 @@ tests = test
       , ([Nothing] :: [Maybe Int]) @=?
         runMaybeT (MT [Nothing] >>= MT . replicate 2 . Just) ] ]
 
-  , "MonadPlus"   ~:
+  , "MonadPlus" ~:
     [ "Maybe" ~:
       [ Nothing @=? (mzero :: Maybe Int)
       , Just 1  @=? Just 1 `mplus` Just 2 ]
@@ -132,6 +132,6 @@ tests = test
       [ [Nothing] @=? runMaybeT (mzero :: MaybeT [] Int)
       , [Just 1]  @=? runMaybeT (MT [Just 1] `mplus` MT [Just 2]) ] ]
 
-  , "MonadTrans"  ~:
+  , "MonadTrans" ~:
     [ "MaybeT" ~:
       [ [Just 1, Just 2, Just 3] @=? runMaybeT (lift [1 .. 3]) ] ] ]

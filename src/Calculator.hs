@@ -36,18 +36,12 @@ type Reg = (Int, Int)
 
 -- | Set value of first register
 --
--- >>> set1 3 (1,2)
--- (3,2)
---
 -- NOTE: need TupleSections language extension
 --
 set1 :: Int -> Reg -> Reg
 set1 i = (i,) . snd
 
 -- | Set value of second register
---
--- >>> set2 3 (1,2)
--- (1,3)
 --
 -- NOTE: need TupleSections language extension
 --
@@ -70,21 +64,5 @@ evalS Load2        = gets snd
 
 -- | Semantic function. Evaluates an expression with both register values
 -- initially set to zero.
---
--- >>> eval $ Add (Lit 2) (Save1 (Neg (Lit 1)))
--- (1,(-1,0))
---
--- >>> eval $ Add (Save1 (Lit 1)) (Save2 (Lit 2))
--- (3,(1,2))
---
--- >>> eval $ Mul (Save1 (Lit 2)) (Save2 Load1)
--- (4,(2,2))
---
--- >>> eval $ SetIn1 1 (SetIn2 2 (Add Load1 Load2))
--- (3,(1,2))
---
--- >>> eval $ SetIn1 1 (SetIn2 2 (Add Load1 (Save1 Load2)))
--- (3,(2,2))
---
 eval :: Exp -> (Int, Reg)
 eval = flip runState (0, 0) . evalS
