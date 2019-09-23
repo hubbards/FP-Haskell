@@ -190,6 +190,9 @@ instance Functor ZipList where
 
 -- | Type class for monads.
 --
+-- NOTE: monads are a subclass of applicative functors. Prior to version 7.10.1
+-- of GHC, this wasn't the case.
+--
 -- Left identity law:
 --
 -- > return x >>= f = f x
