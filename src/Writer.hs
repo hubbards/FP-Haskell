@@ -16,9 +16,7 @@ import Control.Monad (
   , liftM
   , MonadPlus (..)
   )
-
 import Control.Applicative ( Alternative (..) )
-
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------

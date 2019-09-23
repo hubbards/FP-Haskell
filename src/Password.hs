@@ -9,16 +9,12 @@ import System.IO (
     hFlush
   , stdout
   )
-
 import Control.Monad (
     guard
   , msum
   )
-
 import Control.Monad.Trans ( lift )
-
 import Control.Monad.Trans.Maybe ( MaybeT )
-
 import Data.Char (
     isDigit
   , isLetter

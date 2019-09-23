@@ -5,7 +5,6 @@
 module Calculator where
 
 import Control.Monad ( liftM2 )
-
 import Control.Monad.Trans.State (
     State
   , runState

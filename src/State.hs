@@ -17,7 +17,6 @@ import Control.Monad (
     ap
   , liftM
   )
-
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
