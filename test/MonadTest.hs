@@ -60,93 +60,78 @@ prop_applicativeFunctor f tx = fmap f tx == pure f <*> tx
 
 tests :: Test
 tests = test
-  [ "Functor"     ~: tests1
-  , "Applicative" ~: tests2
-  , "Monad"       ~: tests3
-  , "MonadPlus"   ~: tests4
-  , "MonadTrans"  ~: tests5 ]
+  [ "Functor"     ~:
+    [ "Maybe" ~:
+      [ Just 3  @=? fmap (+ 1) (Just 2)
+      , Nothing @=? fmap (+ 1) Nothing ]
+    , "Either a" ~:
+      [ Right 3   @=? fmap (+ 1) (Right 2 :: Either Bool Int)
+      , Left 2    @=? fmap (+ 1) (Left 2)
+      , Left True @=? fmap (+ 1) (Left True) ]
+    , "(a, )" ~:
+      [ (2, 4)    @=? fmap (+ 1) (2, 3)
+      , (True, 3) @=? fmap (+ 1) (True, 2) ]
+    , "a -> " ~:
+      [ 7     @=? fmap (+ 1) (* 2) 3
+      , False @=? fmap even (+ 1) 2 ]
+    , "[]" ~:
+      [ [2, 3, 4] @=? fmap (+ 1) [1 .. 3]
+      , []        @=? fmap (+ 1) [] ] ]
 
--- simple functor tests
-tests1 :: [Test]
-tests1 =
-  [ "Maybe" ~:
-    [ Just 3  @=? fmap (+ 1) (Just 2)
-    , Nothing @=? fmap (+ 1) Nothing ]
-  , "Either a" ~:
-    [ Right 3   @=? fmap (+ 1) (Right 2 :: Either Bool Int)
-    , Left 2    @=? fmap (+ 1) (Left 2)
-    , Left True @=? fmap (+ 1) (Left True) ]
-  , "(a, )" ~:
-    [ (2, 4)    @=? fmap (+ 1) (2, 3)
-    , (True, 3) @=? fmap (+ 1) (True, 2) ]
-  , "a -> " ~:
-    [ 7     @=? fmap (+ 1) (* 2) 3
-    , False @=? fmap even (+ 1) 2 ]
-  , "[]" ~:
-    [ [2, 3, 4] @=? fmap (+ 1) [1 .. 3]
-    , []        @=? fmap (+ 1) [] ] ]
+  , "Applicative" ~:
+    [ "Maybe" ~:
+      [ Just 1  @=? (pure 1 :: Maybe Int)
+      , Just 3  @=? Just (+ 1) <*> Just 2
+      , Nothing @=? Just (+ 1) <*> Nothing
+      , Nothing @=? (Nothing :: Maybe (Int -> Int)) <*> Just 2
+      , Nothing @=? (Nothing :: Maybe (Int -> Int)) <*> Nothing ]
+    , "Either a" ~:
+      [ Right 1   @=? (pure 1 :: Either Bool Int)
+      , Right 3   @=? Right (+ 1) <*> (Right 2 :: Either Bool Int)
+      , Left 2    @=? Right (+ 1) <*> Left 2
+      , Left True @=? Right (+ 1) <*> Left True
+      , Left True @=? (Left True :: Either Bool (Int -> Int)) <*> Right 2 ]
+    , "(a, )" ~:
+      [ (Any False, 1) @=? (pure 1 :: (Any, Int))
+      , (Sum 3, 4)     @=? (Sum 1, (+ 1)) <*> (Sum 2, 3)
+      , (Any True, 3)  @=? (Any True, (+ 1)) <*> (Any False, 2) ]
+    , "a -> " ~:
+      [ 1 @=? (pure 1 :: Bool -> Int) True
+      , 3 @=? ((+) <*> (* 2)) 1 ]
+    , "[]" ~:
+      [ [1]                @=? (pure 1 :: [Int])
+      , [2, 3, 4, 2, 4, 6] @=? [(+ 1), (* 2)] <*> [1 .. 3] ]
+    , "ZipList" ~:
+      [ [1, 1, 1]      @=? (take 3 . getZipList . pure) 1
+      , ZipList [2, 4] @=? ZipList [(+ 1), (* 2)] <*> ZipList [1 .. 3] ] ]
 
--- simple applicative functor tests
-tests2 :: [Test]
-tests2 =
-  [ "Maybe" ~:
-    [ Just 1  @=? (pure 1 :: Maybe Int)
-    , Just 3  @=? Just (+ 1) <*> Just 2
-    , Nothing @=? Just (+ 1) <*> Nothing
-    , Nothing @=? (Nothing :: Maybe (Int -> Int)) <*> Just 2
-    , Nothing @=? (Nothing :: Maybe (Int -> Int)) <*> Nothing ]
-  , "Either a" ~:
-    [ Right 1   @=? (pure 1 :: Either Bool Int)
-    , Right 3   @=? Right (+ 1) <*> (Right 2 :: Either Bool Int)
-    , Left 2    @=? Right (+ 1) <*> Left 2
-    , Left True @=? Right (+ 1) <*> Left True
-    , Left True @=? (Left True :: Either Bool (Int -> Int)) <*> Right 2 ]
-  , "(a, )" ~:
-    [ (Any False, 1) @=? (pure 1 :: (Any, Int))
-    , (Sum 3, 4)     @=? (Sum 1, (+ 1)) <*> (Sum 2, 3)
-    , (Any True, 3)  @=? (Any True, (+ 1)) <*> (Any False, 2) ]
-  , "a -> " ~:
-    [ 1 @=? (pure 1 :: Bool -> Int) True
-    , 3 @=? ((+) <*> (* 2)) 1 ]
-  , "[]" ~:
-    [ [1]                @=? (pure 1 :: [Int])
-    , [2, 3, 4, 2, 4, 6] @=? [(+ 1), (* 2)] <*> [1 .. 3] ]
-  , "ZipList" ~:
-    [ [1, 1, 1]      @=? (take 3 . getZipList . pure) 1
-    , ZipList [2, 4] @=? ZipList [(+ 1), (* 2)] <*> ZipList [1 .. 3] ] ]
+  , "Monad"       ~:
+    [ "Maybe" ~:
+      [ Just 1  @=? (return 1 :: Maybe Int)
+      , Just 3  @=? (Just 1 >>= Just . (+ 2))
+      , Nothing @=? (Nothing >>= Just . (+ 2)) ]
+    , "[]" ~:
+      [ [1]                @=? (return 1 :: [Int])
+      , [1, 1, 2, 2, 3, 3] @=? ([1 .. 3] >>= replicate 2)
+      , ([] :: [Int])      @=? ([] >>= replicate 2) ]
+    , "MaybeT" ~:
+      [ [Just 1]                   @=? runMaybeT (return 1 :: MaybeT [] Int)
+      , [Just 1, Just 1]           @=?
+        runMaybeT (MT [Just 1] >>= MT . replicate 2 . Just)
+      , ([Nothing] :: [Maybe Int]) @=?
+        runMaybeT (MT [Nothing] >>= MT . replicate 2 . Just) ] ]
 
--- simple monad tests
-tests3 :: [Test]
-tests3 =
-  [ "Maybe" ~:
-    [ Just 1  @=? (return 1 :: Maybe Int)
-    , Just 3  @=? (Just 1 >>= Just . (+ 2))
-    , Nothing @=? (Nothing >>= Just . (+ 2)) ]
-  , "[]" ~:
-    [ [1]                @=? (return 1 :: [Int])
-    , [1, 1, 2, 2, 3, 3] @=? ([1 .. 3] >>= replicate 2)
-    , ([] :: [Int])      @=? ([] >>= replicate 2) ]
-  , "MaybeT" ~:
-    [ [Just 1]                   @=? runMaybeT (return 1 :: MaybeT [] Int)
-    , [Just 1, Just 1]           @=?
-      runMaybeT (MT [Just 1] >>= MT . replicate 2 . Just)
-    , ([Nothing] :: [Maybe Int]) @=?
-      runMaybeT (MT [Nothing] >>= MT . replicate 2 . Just) ] ]
+  , "MonadPlus"   ~:
+    [ "Maybe" ~:
+      [ Nothing @=? (mzero :: Maybe Int)
+      , Just 1  @=? Just 1 `mplus` Just 2 ]
+    , "[]" ~:
+      [ []           @=? (mzero :: [Int])
+      , [1, 2, 3, 4] @=? [1, 2] `mplus` [3, 4] ]
+    , "MaybeT" ~:
+      [ [Nothing] @=? runMaybeT (mzero :: MaybeT [] Int)
+      , [Just 1]  @=? runMaybeT (MT [Just 1] `mplus` MT [Just 2]) ] ]
 
--- simple MonadPlus tests
-tests4 :: [Test]
-tests4 =
-  [ "Maybe" ~:
-    [ Nothing @=? (mzero :: Maybe Int)
-    , Just 1  @=? Just 1 `mplus` Just 2 ]
-  , "[]" ~:
-    [ []           @=? (mzero :: [Int])
-    , [1, 2, 3, 4] @=? [1, 2] `mplus` [3, 4] ]
-  , "MaybeT" ~:
-    [ [Nothing] @=? runMaybeT (mzero :: MaybeT [] Int)
-    , [Just 1]  @=? runMaybeT (MT [Just 1] `mplus` MT [Just 2]) ] ]
-
--- simple monad transformer tests
-tests5 :: [Test]
-tests5 =
-  [ "MaybeT" ~: [ [Just 1, Just 2, Just 3] @=? runMaybeT (lift [1 .. 3]) ] ]
+  , "MonadTrans"  ~:
+    [ "MaybeT" ~:
+      [ [Just 1, Just 2, Just 3] @=? runMaybeT (lift [1 .. 3]) ] ] ]
