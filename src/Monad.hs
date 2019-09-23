@@ -324,9 +324,9 @@ instance MonadPlus [] where
 --
 -- > lift (m >>= f) = lift m >>= (lift . f)
 --
-class MonadTrans t where
+class MonadTrans s where
   -- Lift
-  lift :: Monad m => m a -> t m a
+  lift :: Monad t => t a -> s t a
 
 -- -----------------------------------------------------------------------------
 -- MonadTrans example instances
@@ -335,39 +335,39 @@ class MonadTrans t where
 
 -- | Data type for maybe monad transformer. The first type parameter represents
 -- the inner monad.
-data MaybeT m a = MT (m (Maybe a))
+data MaybeT t a = MT (t (Maybe a))
 
 instance MonadTrans MaybeT where
   lift m = MT (Just <$> m)
 -- lift m = MT (m >>= return . Just)
 
-instance Monad m => Monad (MaybeT m) where
+instance Monad t => Monad (MaybeT t) where
   return = MT . return . Just
-  (MT x) >>= f =
-    MT $ x >>= \ y -> case y of
-                        Nothing -> return Nothing
-                        Just z  -> runMaybeT (f z)
+  (MT tm) >>= f =
+    MT $ tm >>= \ mx -> case mx of
+                          Nothing -> return Nothing
+                          Just x  -> runMaybeT (f x)
 
 -- Boilerplate
-instance Monad m => Applicative (MaybeT m) where
+instance Monad t => Applicative (MaybeT t) where
   pure = return
   (<*>) = ap
 
 -- Boilerplate
-instance Monad m => Functor (MaybeT m) where
+instance Monad t => Functor (MaybeT t) where
   fmap = liftM
 
-instance Monad m => MonadPlus (MaybeT m) where
+instance Monad t => MonadPlus (MaybeT t) where
   mzero = MT (return Nothing)
-  (MT x) `mplus` (MT y) =
-    MT $ x >>= \ z -> case z of
-                        Nothing -> y
-                        Just _  -> return z
+  (MT l) `mplus` (MT r) =
+    MT $ l >>= \ m -> case m of
+                        Nothing -> r
+                        Just _  -> return m
 
-maybeT :: Monad m => m (Maybe a) -> MaybeT m a
+maybeT :: Monad t => t (Maybe a) -> MaybeT t a
 maybeT = MT
 
-runMaybeT :: MaybeT m a -> m (Maybe a)
-runMaybeT (MT x) = x
+runMaybeT :: MaybeT t a -> t (Maybe a)
+runMaybeT (MT t) = t
 
 -- TODO: add primatives / functions (from Control.Monad.Trans.Maybe)
