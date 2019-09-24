@@ -26,11 +26,11 @@ dependencies:
 library:
   source-dirs: src
   exposed-modules:
-  - Calculator
   - Monad
   - Monoid
   - Password
   - Reader
+  - Register
   - Stack
   - State
   - Tree
