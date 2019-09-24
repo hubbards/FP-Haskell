@@ -1,113 +1,90 @@
-{-# LANGUAGE FlexibleContexts #-}
-
--- | This module contains a deep-embedded DSL for a stack-based command
+-- | This module contains a stack ADT and a deep-embedded DSL for a stack-based
 -- language.
-module Stack where
+module Stack (
+    Stack
+  , Error
+  , empty
+  , push
+  , pop
+  , Cmd (..)
+  , Prog
+  , evalCmd
+  , evalCmd'
+  , evalProg
+  , evalProg'
+  ) where
 
 import Control.Monad ( liftM2 )
-import Control.Monad.Except (
-    MonadError (..)
-  , throwError
-  )
-import Control.Monad.State (
-    MonadState (..)
+import Control.Monad.Trans.Class ( lift )
+import Control.Monad.Trans.State (
+    StateT (..)
+  , state
   , get
+  , put
   , modify
+  , execStateT
   )
 
--- import Control.Monad.Trans.Except
--- import Control.Monad.Trans.Maybe
+-- -----------------------------------------------------------------------------
+-- Stack ADT
+
+-- | Type synonym for stack data structure
+type Stack a = [a]
+
+-- | Type synonym for errors which might occur in a stack operation
+type Error = String
+
+-- | Error when a operation requiring a non-empty stack is performed on a empty
+-- stack
+empty :: Error
+empty = "Operation requires stack to be non-empty but stack is empty"
+
+-- | Push a value onto the top of a stack.
+push :: Monad m => a -> StateT (Stack a) m ()
+push x = modify (x :)
+
+-- | Pop a value off of the top of a stack.
+pop :: StateT (Stack a) (Either Error) a
+pop = StateT pop' where
+  pop' []       = Left empty
+  pop' (x : xs) = Right (x, xs)
+-- pop = do
+--   xs <- get
+--   case xs of
+--     []        -> lift (Left empty)
+--     (x : xs') -> do { put xs' ; return x }
 
 -- -----------------------------------------------------------------------------
 -- Syntax
 
--- | Type synonym for stack programs
-type Prog = [Cmd]
-
--- | Data type for stack commands
-data Cmd = PushB Bool   -- push boolean
-         | PushI Int    -- push integer
-         | Not          -- pop boolean and push its negation
-         | And          -- pop two booleans and push their conjunction
-         | Or           -- pop two booleans and push their disjunction
-         | Neg          -- pop integer and push its negation
-         | Add          -- pop two integers and push their sum
-         | Mul          -- pop two integers and push their product
-         | If Prog Prog -- pop boolean and conditionally run one of two programs
+-- | Data type for commands
+data Cmd = Push Int -- push number
+         | Neg      -- pop number and push its additive inverse
+         | Add      -- pop two numbers and push their sum
+         | Mult     -- pop two numbers and push their product
   deriving (Eq, Show)
+
+-- | Type synonym for programs, which are sequences of commands
+type Prog = [Cmd]
 
 -- -----------------------------------------------------------------------------
 -- Semantics
 
--- | Type synonym for program stack
-type Stack = [Either Bool Int]
+-- | Monadic semantic function for commands. The state monad transformer is used
+-- to model the semantic domain.
+evalCmd :: Cmd -> StateT (Stack Int) (Either Error) ()
+evalCmd (Push i) = push i
+evalCmd Neg      = fmap negate pop >>= push
+evalCmd Add      = liftM2 (+) pop pop >>= push
+evalCmd Mult     = liftM2 (*) pop pop >>= push
 
--- | Data type for error result
-data Error = Empty
-           | NotB
-           | NotI
-  deriving (Eq, Show)
+evalCmd' :: Cmd -> Stack Int -> Either Error (Stack Int)
+evalCmd' = execStateT . evalCmd
 
--- TODO: document
---
--- NOTE: need FlexibleContexts language extension
---
-pushB :: MonadState Stack m => Bool -> m ()
-pushB b = modify (Left b :) -- do s <- get; put (Left b : s)
-
--- TODO: document
---
--- NOTE: need FlexibleContexts language extension
---
-pushI :: MonadState Stack m => Int -> m ()
-pushI i = modify (Right i :) -- do s <- get; put (Right i : s)
-
--- TODO: document
---
--- NOTE: need FlexibleContexts language extension
---
-popB :: (MonadError Error m, MonadState Stack m) => m Bool
-popB = do s <- get
-          case s of
-            []            -> throwError Empty
-            (Left b : _)  -> return b
-            (Right _ : _) -> throwError NotB
-
--- TODO: document
---
--- NOTE: need FlexibleContexts language extension
---
-popI :: (MonadError Error m, MonadState Stack m) => m Int
-popI = do s <- get
-          case s of
-            []            -> throwError Empty
-            (Left _ : _)  -> throwError NotI
-            (Right i : _) -> return i
-
--- | Monadic semantic function for stack commands.
---
--- TODO: doctests
---
--- NOTE: need FlexibleContexts language extension
---
-evalCmd :: (MonadError Error m, MonadState Stack m) => Cmd -> m ()
-evalCmd (PushB b)  = pushB b
-evalCmd (PushI i)  = pushI i
-evalCmd Not        = popB >>= pushB . not
-evalCmd And        = liftM2 (&&) popB popB >>= pushB
-evalCmd Or         = liftM2 (||) popB popB >>= pushB
-evalCmd Neg        = popI >>= pushI . negate
-evalCmd Add        = liftM2 (+) popI popI >>= pushI
-evalCmd Mul        = liftM2 (*) popI popI >>= pushI
-evalCmd (If p1 p2) = do b <- popB
-                        let p = if b then p1 else p2
-                        evalProg p
-
--- | Monadic semantic function for stack programs.
---
--- TODO: doctests
---
--- NOTE: need FlexibleContexts language extension
---
-evalProg :: (MonadError Error m, MonadState Stack m) => Prog -> m ()
+-- | Monadic semantic function for programs. The state monad transformer is used
+-- to model the semantic domain.
+evalProg :: Prog -> StateT (Stack Int) (Either Error) ()
 evalProg = mapM_ evalCmd
+
+evalProg' :: Prog -> Stack Int -> Either Error (Stack Int)
+evalProg' = execStateT . evalProg
