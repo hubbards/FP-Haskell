@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f417ce771937fb4aa6f9dc5fd0c6d746b9d608174424150d1fa2eb4da2d37f8b
+-- hash: dd3b41a1b4addec7c4236f9b2e28f28c57494d4c069adb40fa602606cd6eec06
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -27,11 +27,11 @@ source-repository head
 
 library
   exposed-modules:
-      Calculator
       Monad
       Monoid
       Password
       Reader
+      Register
       Stack
       State
       Tree
@@ -51,8 +51,9 @@ test-suite tests
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
-      CalculatorTest
       MonadTest
+      RegisterTest
+      StackTest
       TreeTest
       Paths_fp_haskell
   hs-source-dirs:

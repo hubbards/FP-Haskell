@@ -4,12 +4,14 @@ import Test.HUnit (
   , test
   , (~:)
   )
-import qualified CalculatorTest
 import qualified MonadTest
+import qualified RegisterTest
+import qualified StackTest
 import qualified TreeTest
 
 main :: IO Counts
 main = runTestTT . test $
-  [ "Calculator" ~: CalculatorTest.tests
-  , "Monad"      ~: MonadTest.tests
-  , "Tree"       ~: TreeTest.tests ]
+  [ "Monad"    ~: MonadTest.tests
+  , "Register" ~: RegisterTest.tests
+  , "Stack"    ~: StackTest.tests
+  , "Tree"     ~: TreeTest.tests ]
