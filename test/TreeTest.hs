@@ -12,7 +12,7 @@ import Tree
 
 tests :: [Test]
 tests =
-  [ "basic functions" ~:
+  [ "basic operations" ~:
     [ "leaf" ~:
       [ Node 1 Empty Empty    @=? leaf 1
       , Node True Empty Empty @=? leaf True ]
@@ -20,9 +20,9 @@ tests =
       [ leaf 0                   @=? zeros 0
       , Node 0 (leaf 0) (leaf 0) @=? zeros 1 ]
     , "isEmpty" ~:
-      [ isEmpty Empty    @? "Empty"
-      , isEmpty (leaf 1) @? "Non-empty" ] ]
-  , "zipper functions" ~:
+      [ isEmpty Empty          @? "Empty"
+      , not (isEmpty $ leaf 1) @? "Non-empty" ] ]
+  , "zipper operations" ~:
     [ "isHole" ~:
       [ isHole Hole                   @? "Hole"
       , not (isHole $ L 1 Hole Empty) @? "Non-hole" ]
