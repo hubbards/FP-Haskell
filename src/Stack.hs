@@ -5,9 +5,13 @@ module Stack (
   , Error
   , empty
   , push
+  , push'
   , pop
+  , pop'
   , Cmd (..)
   , Prog
+  , zero
+  , div'
   , evalCmd
   , evalCmd'
   , evalProg
@@ -34,25 +38,27 @@ type Stack a = [a]
 -- | Type synonym for errors which might occur in a stack operation
 type Error = String
 
--- | Error when a operation requiring a non-empty stack is performed on a empty
--- stack
+-- | Error when an operation requiring a non-empty stack is performed on an
+-- empty stack
 empty :: Error
 empty = "Operation requires stack to be non-empty but stack is empty"
 
 -- | Push a value onto the top of a stack.
-push :: Monad m => a -> StateT (Stack a) m ()
-push x = modify (x :)
+push :: a -> Stack a -> Stack a
+push = (:)
+
+-- | Push a value onto the top of a stack.
+push' :: Monad m => a -> StateT (Stack a) m ()
+push' = modify . push
 
 -- | Pop a value off of the top of a stack.
-pop :: StateT (Stack a) (Either Error) a
-pop = StateT pop' where
-  pop' []       = Left empty
-  pop' (x : xs) = Right (x, xs)
--- pop = do
---   xs <- get
---   case xs of
---     []        -> lift (Left empty)
---     (x : xs') -> do { put xs' ; return x }
+pop :: Stack a -> Either Error (a, Stack a)
+pop []       = Left empty
+pop (x : xs) = Right (x, xs)
+
+-- | Pop a value off of the top of a stack.
+pop' :: StateT (Stack a) (Either Error) a
+pop' = StateT pop
 
 -- -----------------------------------------------------------------------------
 -- Syntax
@@ -61,7 +67,9 @@ pop = StateT pop' where
 data Cmd = Push Int -- push number
          | Neg      -- pop number and push its additive inverse
          | Add      -- pop two numbers and push their sum
+         | Sub      -- pop two numbers and push their difference
          | Mult     -- pop two numbers and push their product
+         | Div      -- pop two numbers and push their quotient
   deriving (Eq, Show)
 
 -- | Type synonym for programs, which are sequences of commands
@@ -70,13 +78,27 @@ type Prog = [Cmd]
 -- -----------------------------------------------------------------------------
 -- Semantics
 
+-- | Error when a zero divisor is popped off a stack
+zero :: Error
+zero = "Popped zero divisor off stack"
+
+-- | TODO: document
+div' :: Int -> Int -> Either Error Int
+div' _ 0 = Left zero
+div' x y = Right (x `div` y)
+
 -- | Monadic semantic function for commands. The state monad transformer is used
 -- to model the semantic domain.
 evalCmd :: Cmd -> StateT (Stack Int) (Either Error) ()
-evalCmd (Push i) = push i
-evalCmd Neg      = fmap negate pop >>= push
-evalCmd Add      = liftM2 (+) pop pop >>= push
-evalCmd Mult     = liftM2 (*) pop pop >>= push
+evalCmd (Push i) = push' i
+evalCmd Neg      = fmap negate pop' >>= push'
+evalCmd Add      = liftM2 (+) pop' pop' >>= push'
+evalCmd Sub      = liftM2 (-) pop' pop' >>= push'
+evalCmd Mult     = liftM2 (*) pop' pop' >>= push'
+evalCmd Div      = do x <- pop'
+                      y <- pop'
+                      z <- lift (div' x y)
+                      push' z
 
 evalCmd' :: Cmd -> Stack Int -> Either Error (Stack Int)
 evalCmd' = execStateT . evalCmd
