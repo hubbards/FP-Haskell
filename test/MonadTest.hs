@@ -11,12 +11,9 @@ module MonadTest (
 
 import Test.HUnit (
     Test
-  , Assertion
   , (~:)
   , (@=?)
-  , test
   )
-import Monad
 import Data.Monoid (
     Sum (..)
   , Any (..)
@@ -32,6 +29,7 @@ import Prelude hiding (
   , (>>)
   , mapM
   )
+import Monad
 
 prop_functorIdentity :: (Functor t, Eq (t a)) => t a -> Bool
 prop_functorIdentity x = fmap id x == id x

@@ -2,11 +2,8 @@ module StackTest ( tests ) where
 
 import Test.HUnit (
     Test
-  , Assertion
   , (~:)
   , (@=?)
-  , (@?)
-  , test
   )
 import Stack
 

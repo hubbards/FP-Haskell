@@ -2,10 +2,8 @@ module RegisterTest ( tests ) where
 
 import Test.HUnit (
     Test
-  , Assertion
   , (~:)
   , (@=?)
-  , test
   )
 import Register
 

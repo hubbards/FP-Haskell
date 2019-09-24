@@ -1,10 +1,20 @@
 -- | This module contains a register ADT and a deep-embedded DSL for a
 -- register-based language.
-module Register where
+module Register (
+    Register
+  , set1
+  , set1'
+  , set2
+  , set2'
+  , Exp (..)
+  , eval
+  , eval'
+  ) where
 
 import Control.Monad ( liftM2 )
 import Control.Monad.Trans.State (
     State
+  , state
   , runState
   , modify
   , gets
@@ -17,12 +27,20 @@ import Control.Monad.Trans.State (
 type Register a b = (a, b)
 
 -- | Set value of first register
-set1 :: a -> Register a b -> Register a b
+set1 :: c -> Register a b -> Register c b
 set1 x (_, y) = (x, y)
 
+-- | Set value of first register
+set1' :: a -> State (Register a b) ()
+set1' = modify . set1
+
 -- | Set value of second register
-set2 :: b -> Register a b -> Register a b
+set2 :: c -> Register a b -> Register a c
 set2 y (x, _) = (x, y)
+
+-- | Set value of second register
+set2' :: b -> State (Register a b) ()
+set2' = modify . set2
 
 -- -----------------------------------------------------------------------------
 -- Syntax
@@ -50,10 +68,10 @@ eval (Lit i)      = return i
 eval (Neg e)      = fmap negate (eval e)
 eval (Add l r)    = liftM2 (+) (eval l) (eval r)
 eval (Mul l r)    = liftM2 (*) (eval l) (eval r)
-eval (SetIn1 i e) = modify (set1 i) >> eval e
-eval (SetIn2 i e) = modify (set2 i) >> eval e
-eval (Save1 e)    = do i <- eval e; modify (set1 i); return i
-eval (Save2 e)    = do i <- eval e; modify (set2 i); return i
+eval (SetIn1 i e) = set1' i >> eval e
+eval (SetIn2 i e) = set2' i >> eval e
+eval (Save1 e)    = do i <- eval e ; set1' i ; return i
+eval (Save2 e)    = do i <- eval e ; set2' i ; return i
 eval Load1        = gets fst
 eval Load2        = gets snd
 

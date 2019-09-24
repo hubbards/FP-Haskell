@@ -2,11 +2,9 @@ module TreeTest ( tests ) where
 
 import Test.HUnit (
     Test
-  , Assertion
   , (~:)
   , (@=?)
   , (@?)
-  , test
   )
 import Tree
 
