@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4157e433508684efbee405270ad5ed1e76286c112edfad9039204a44b12f0159
+-- hash: 95a9b15ff4c3588c3825d19af019d9fdb3eb1109c497ed4b894177d19eba6bf7
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Arrow
       Monad
       Monoid
       Password
