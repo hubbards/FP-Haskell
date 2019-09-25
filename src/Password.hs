@@ -13,12 +13,14 @@ import Control.Monad (
     guard
   , msum
   )
-import Control.Monad.Trans ( lift )
-import Control.Monad.Trans.Maybe ( MaybeT )
 import Data.Char (
     isDigit
   , isLetter
   )
+
+-- NOTE: from transformers package
+import Control.Monad.Trans.Class ( lift )
+import Control.Monad.Trans.Maybe ( MaybeT )
 
 -- | Prompt user for password.
 getPassword :: IO String
@@ -26,9 +28,13 @@ getPassword = do
   putStr "Enter password: " ; hFlush stdout
   getLine
 
--- | Saves password to file.
+-- | "Saves" password.
+--
+-- NOTE: In a real application this would hash and salt the application before
+-- storing it in a database.
+--
 setPassword :: String -> IO ()
-setPassword = writeFile "password.txt"
+setPassword _ = putStrLn "Saving password."
 
 -- | Prompt user for new password then save it to file.
 newPassword :: IO ()
@@ -40,16 +46,10 @@ isLegal p = n > 5 && n < 10 && all (\ c -> isDigit c || isLetter c) p where
   n = length p
 
 -- | Prompt user for legal password; @Nothing@ if password is illegal.
---
--- NOTE: @lift@ is used to lift a computation from @IO@ to @MaybeT@
---
--- NOTE: for @MaybeT@, @guard False@ returns @Nothing@
---
--- NOTE: for @MaybeT@, @Nothing@ is propagated by @(>>=)@
---
 getLegalPassword :: MaybeT IO String
 getLegalPassword = do
   p <- lift getPassword
+  -- failure is propagated
   guard (isLegal p) ; return p
 
 -- | Password was illegal, try again.
@@ -58,12 +58,8 @@ tryAgain = lift (putStrLn "Illegal password, try again.") >> getLegalPassword
 
 -- | Prompt user for password until provided a legal password then save it to
 -- file.
---
--- NOTE: for @MaybeT@, @msum@ returns first @Just@ value
---
--- NOTE: @lift@ is used to lift a computation from @IO@ to @Maybe@
---
 newLegalPassword :: MaybeT IO ()
 newLegalPassword = do
+  -- return first Just value
   p <- msum (getLegalPassword : repeat tryAgain)
   lift (setPassword p)

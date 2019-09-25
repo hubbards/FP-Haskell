@@ -1,10 +1,12 @@
 module StackTest ( tests ) where
 
+-- NOTE: from HUnit package
 import Test.HUnit (
     Test
   , (~:)
   , (@=?)
   )
+
 import Stack
 
 tests :: [Test]

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dd3b41a1b4addec7c4236f9b2e28f28c57494d4c069adb40fa602606cd6eec06
+-- hash: 4157e433508684efbee405270ad5ed1e76286c112edfad9039204a44b12f0159
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -42,7 +42,6 @@ library
       src
   build-depends:
       base >=4.7 && <5
-    , mtl
     , pretty
     , transformers
   default-language: Haskell2010
@@ -61,5 +60,7 @@ test-suite tests
   build-depends:
       HUnit
     , base >=4.7 && <5
+    , doctest >=0.8
+    , filepath
     , fp-haskell
   default-language: Haskell2010

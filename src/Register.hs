@@ -10,7 +10,8 @@ module Register (
   ) where
 
 import Control.Monad ( liftM2 )
--- from transformer package
+
+-- NOTE: from transformers package
 import Control.Monad.Trans.State (
     State
   , state

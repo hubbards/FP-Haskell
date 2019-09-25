@@ -9,11 +9,6 @@ module MonadTest (
   , prop_applicativeFunctor
   ) where
 
-import Test.HUnit (
-    Test
-  , (~:)
-  , (@=?)
-  )
 import Data.Monoid (
     Sum (..)
   , Any (..)
@@ -29,6 +24,14 @@ import Prelude hiding (
   , (>>)
   , mapM
   )
+
+-- NOTE: from HUnit package
+import Test.HUnit (
+    Test
+  , (~:)
+  , (@=?)
+  )
+
 import Monad
 
 prop_functorIdentity :: (Functor t, Eq (t a)) => t a -> Bool

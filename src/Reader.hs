@@ -15,7 +15,8 @@ import Control.Monad (
     ap
   , liftM
   )
--- from transformer package
+
+-- NOTE: from transformers package
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
@@ -28,7 +29,7 @@ import Control.Monad.Trans.Class ( MonadTrans (..) )
 -- In domain theory, this corresponds to a function domain for naming with
 -- immutable variables.
 data Reader r a = R (r -> a)
---type Reader r a = ReaderT r Identity a
+-- type Reader r a = ReaderT r Identity a
 
 instance Monad (Reader r) where
   return x = R (const x)
@@ -65,6 +66,7 @@ local f (R c) = R (c . f)
 -- are the same as before and the second type parameter represents the inner
 -- monad.
 data ReaderT r m a = RT (r -> m a)
+-- newtype ReaderT r m a = ReaderT { runReaderT :: r -> m a }
 
 instance MonadTrans (ReaderT r) where
   lift m = RT (const m)

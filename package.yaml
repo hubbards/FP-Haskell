@@ -36,7 +36,6 @@ library:
   - Tree
   - Writer
   dependencies:
-  - mtl
   - transformers
   - pretty
 
@@ -46,4 +45,6 @@ tests:
     source-dirs: test
     dependencies:
     - fp-haskell
+    - filepath
+    - doctest >= 0.8
     - HUnit

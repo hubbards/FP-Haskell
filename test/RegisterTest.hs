@@ -1,10 +1,12 @@
 module RegisterTest ( tests ) where
 
+-- NOTE: from HUnit package
 import Test.HUnit (
     Test
   , (~:)
   , (@=?)
   )
+
 import Register
 
 tests :: [Test]

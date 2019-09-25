@@ -17,7 +17,8 @@ import Control.Monad (
   , MonadPlus (..)
   )
 import Control.Applicative ( Alternative (..) )
--- from transformer package
+
+-- NOTE: from transformers package
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
@@ -29,7 +30,7 @@ import Control.Monad.Trans.Class ( MonadTrans (..) )
 --
 -- In domain theory, this corresponds to a product domain.
 data Writer w a = W a w
---type Writer w a = WriterT w Identity a
+-- type Writer w a = WriterT w Identity a
 
 instance Monoid w => Monad (Writer w) where
   return x = W x mempty
@@ -63,6 +64,7 @@ censor f (W x s) = W x (f s)
 -- Writer monad transformer data type and type class instances
 
 data WriterT w m a = WT (m (a, w))
+-- newtype WriterT w m a = WriterT { runWriterT :: (m (a, w)) }
 
 instance Monoid w => MonadTrans (WriterT w) where
   lift m = WT $ m >>= \ x -> return (x, mempty)

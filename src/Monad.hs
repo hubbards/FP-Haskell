@@ -69,6 +69,11 @@ class Functor t where
 -- -----------------------------------------------------------------------------
 -- Functor derived operations
 
+-- | Infix version of `fmap`.
+--
+-- This function is useful for writing applicative style function application.
+-- For example, we can write `f <$> x <*> y` instead of `pure f <*> x <*> y`.
+--
 (<$>) :: Functor t => (a -> b) -> t a -> t b
 (<$>) = fmap
 
@@ -147,7 +152,7 @@ when True  tx = tx
 when False _  = pure ()
 
 unless :: Applicative t => Bool -> t () -> t ()
-unless p = when (not p)
+unless = when . not
 
 -- -----------------------------------------------------------------------------
 -- Applicative example instances
@@ -255,7 +260,7 @@ sequence = foldr mcons (return []) where
 mapM :: Monad t => (a -> t b) -> [a] -> t [b]
 mapM f = sequence . map f
 
--- | This function can be used to define `(<*>)` in a boilerplate `Applicative`
+-- | This function can be used to define `<*>` in a boilerplate `Applicative`
 -- instance.
 --
 -- > ap = (<*>)
@@ -299,6 +304,7 @@ class Monad t => MonadPlus t where
 -- -----------------------------------------------------------------------------
 -- MonadPlus derived operations
 
+-- NOTE: this is actually a derived operation of Alternative
 guard :: MonadPlus t => Bool -> t ()
 guard True  = return ()
 guard False = mzero
@@ -340,6 +346,7 @@ class MonadTrans s where
 -- | Data type for maybe monad transformer. The first type parameter represents
 -- the inner monad.
 data MaybeT t a = MT (t (Maybe a))
+-- newtype MaybeT t a = MaybeT { runMaybeT :: t (Maybe a) }
 
 instance MonadTrans MaybeT where
   lift m = MT (Just <$> m)

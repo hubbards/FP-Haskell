@@ -18,6 +18,7 @@ module Tree (
   , prettyZipper
   ) where
 
+-- NOTE: from pretty package
 import Text.PrettyPrint hiding ( isEmpty )
 
 -- -----------------------------------------------------------------------------

@@ -17,7 +17,8 @@ import Control.Monad (
     ap
   , liftM
   )
--- from transformer package
+
+-- NOTE: from transformers package
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
@@ -29,7 +30,7 @@ import Control.Monad.Trans.Class ( MonadTrans (..) )
 -- In domain theory, this corresponds to a function domain for naming with
 -- mutable variables.
 data State s a = S (s -> (a, s))
---type State s a = StateT s Identity a
+-- type State s a = StateT s Identity a
 
 instance Monad (State s) where
   return x = S $ \ s -> (x, s)
@@ -80,6 +81,7 @@ execState sc s = snd (runState sc s)
 -- are the same as before and the second type parameter represents the inner
 -- monad.
 data StateT s m a = ST (s -> m (a, s))
+-- newtype StateT s m a = StateT { runStateT :: s -> m (a, s) }
 
 instance MonadTrans (StateT s) where
   lift x = ST $ \ s -> x >>= \ y -> return (y, s)

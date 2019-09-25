@@ -16,7 +16,8 @@ module Stack (
   ) where
 
 import Control.Monad ( liftM2 )
--- from transformer package
+
+-- NOTE: from transformers package
 import Control.Monad.Trans.Class ( lift )
 import Control.Monad.Trans.State (
     StateT (..)
