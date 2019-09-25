@@ -17,6 +17,7 @@ import Control.Monad (
   , MonadPlus (..)
   )
 import Control.Applicative ( Alternative (..) )
+-- from transformer package
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
@@ -49,34 +50,27 @@ instance Monoid w => Functor (Writer w) where
 tell :: w -> Writer w ()
 tell = W ()
 
--- TODO: implement
 listen :: Writer w a -> Writer w (a, w)
-listen = undefined
--- listen (W x s) = W (x, s) s
+listen (W x s) = W (x, s) s
 
--- TODO: implement
 pass :: Writer w (a, w -> w) -> Writer w a
-pass = undefined
--- pass (W (x, f) s) = W x (f s)
+pass (W (x, f) s) = W x (f s)
 
--- TODO: implement
 censor :: (w -> w) -> Writer w a -> Writer w a
-censor = undefined
--- censor f (W x s) = W x (f s)
+censor f (W x s) = W x (f s)
 
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer data type and type class instances
 
 data WriterT w m a = WT (m (a, w))
 
--- TODO: implement
-instance MonadTrans (WriterT w) where
-  lift = undefined
+instance Monoid w => MonadTrans (WriterT w) where
+  lift m = WT $ m >>= \ x -> return (x, mempty)
 
--- TODO: implement
 instance (Monoid w, Monad m) => Monad (WriterT w m) where
-  return = undefined
-  (>>=) = undefined
+  return x = WT $ return (x, mempty)
+  WT m >>= f = WT $ m >>= \ (x, s) -> let WT n = f x in
+                    n >>= \ (y, t) -> return (y, s `mappend` t)
 
 -- Boilerplate
 instance (Monoid w, Monad m) => Applicative (WriterT w m) where
@@ -87,14 +81,13 @@ instance (Monoid w, Monad m) => Applicative (WriterT w m) where
 instance (Monoid w, Monad m) => Functor (WriterT w m) where
   fmap = liftM
 
--- TODO: implement
 instance (Monoid w, MonadPlus m) => Alternative (WriterT w m) where
-  empty = undefined
-  (<|>) = undefined
+  empty = WT empty
+  WT m <|> WT n = WT (m <|> n)
 
 instance (Monoid w, MonadPlus m) => MonadPlus (WriterT w m) where
   mzero = WT mzero
-  x `mplus` y = WT $ runWriterT x `mplus` runWriterT y
+  WT m `mplus` WT n = WT (m `mplus` n)
 
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer functions
