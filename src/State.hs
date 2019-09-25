@@ -17,6 +17,7 @@ import Control.Monad (
     ap
   , liftM
   )
+-- from transformer package
 import Control.Monad.Trans.Class ( MonadTrans (..) )
 
 -- -----------------------------------------------------------------------------
