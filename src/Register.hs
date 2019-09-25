@@ -3,15 +3,14 @@
 module Register (
     Register
   , set1
-  , set1'
   , set2
-  , set2'
   , Exp (..)
   , eval
   , eval'
   ) where
 
 import Control.Monad ( liftM2 )
+-- from transformer package
 import Control.Monad.Trans.State (
     State
   , state
@@ -30,17 +29,9 @@ type Register a b = (a, b)
 set1 :: c -> Register a b -> Register c b
 set1 x (_, y) = (x, y)
 
--- | Set value of first register
-set1' :: a -> State (Register a b) ()
-set1' = modify . set1
-
 -- | Set value of second register
 set2 :: c -> Register a b -> Register a c
 set2 y (x, _) = (x, y)
-
--- | Set value of second register
-set2' :: b -> State (Register a b) ()
-set2' = modify . set2
 
 -- -----------------------------------------------------------------------------
 -- Syntax
@@ -50,12 +41,12 @@ data Exp = Lit Int        -- literal integer
          | Neg Exp        -- additive inverse
          | Add Exp Exp    -- addition
          | Mul Exp Exp    -- multiplication
+         | Load1          -- load first register value
+         | Load2          -- load second register value
          | SetIn1 Int Exp -- set first register value in expression
          | SetIn2 Int Exp -- set second register value in expression
          | Save1 Exp      -- save value of expression to first register
          | Save2 Exp      -- save value of expression to second register
-         | Load1          -- load first register value
-         | Load2          -- load second register value
   deriving (Eq, Show)
 
 -- -----------------------------------------------------------------------------
@@ -68,12 +59,24 @@ eval (Lit i)      = return i
 eval (Neg e)      = fmap negate (eval e)
 eval (Add l r)    = liftM2 (+) (eval l) (eval r)
 eval (Mul l r)    = liftM2 (*) (eval l) (eval r)
-eval (SetIn1 i e) = set1' i >> eval e
-eval (SetIn2 i e) = set2' i >> eval e
-eval (Save1 e)    = do i <- eval e ; set1' i ; return i
-eval (Save2 e)    = do i <- eval e ; set2' i ; return i
 eval Load1        = gets fst
 eval Load2        = gets snd
+eval (SetIn1 i e) = set1' i >> eval e
+eval (SetIn2 i e) = set2' i >> eval e
+eval (Save1 e)    = do
+  i <- eval e
+  set1' i
+  return i
+eval (Save2 e)    = do
+  i <- eval e
+  set2' i
+  return i
+
+set1' :: a -> State (Register a b) ()
+set1' = modify . set1
+
+set2' :: b -> State (Register a b) ()
+set2' = modify . set2
 
 -- | Semantic function. Evaluates an expression with both register values
 -- initially set to zero.
