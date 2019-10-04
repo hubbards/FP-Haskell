@@ -134,7 +134,7 @@ class Functor t => Applicative t where
 -- | This function can be used define `fmap` in a boilerplate `Functor`
 -- instance.
 --
--- > liftA2 = fmap
+-- > liftA = fmap
 --
 liftA :: Applicative t => (a -> b) -> t a -> t b
 liftA f tx = pure f <*> tx
