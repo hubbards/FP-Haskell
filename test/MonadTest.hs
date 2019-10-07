@@ -43,7 +43,7 @@ prop_mapFusion g f x = fmap (g . f) x == (fmap g . fmap f) x
 prop_applicativeIdentity :: (Applicative t, Eq (t a)) => t a -> Bool
 prop_applicativeIdentity tx = pure id <*> tx == tx
 
--- FIXME: ambiguous type
+-- FIXME: ambiguous type variable t since it only appears in constraint
 -- prop_homomorphism :: (Applicative t, Eq (t b)) => (a -> b) -> a -> Bool
 -- prop_homomorphism f x = pure f <*> pure x == pure (f x)
 
