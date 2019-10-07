@@ -25,6 +25,7 @@ module Monad (
   , sequence
   , mapM
   , filterM
+  , foldM
 
   , MonadPlus (..)
   , guard
@@ -273,8 +274,13 @@ sequence = foldr mcons (return []) where
 mapM :: Monad t => (a -> t b) -> [a] -> t [b]
 mapM f = sequence . map f
 
+-- TODO: implement
 filterM :: Monad t => (a -> t Bool) -> [a] -> t [a]
 filterM = undefined
+
+-- TODO: implement
+foldM :: Monad t => (a -> b -> t a) -> a -> [b] -> t a
+foldM = undefined
 
 -- -----------------------------------------------------------------------------
 -- Monad example instances
