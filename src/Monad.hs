@@ -16,16 +16,19 @@ module Monad (
   ,  ZipList (..)
 
   , Monad (..)
-  , join
   , (>>)
   , (=<<)
+  , join
+  , ap
   , liftM
   , liftM2
   , sequence
   , mapM
-  , ap
+  , filterM
+
   , MonadPlus (..)
   , guard
+
   , MonadTrans (..)
   , MaybeT (..)
   , maybeT
@@ -120,7 +123,7 @@ instance Functor [] where
 --
 -- Relationship with functors:
 --
--- > fmap f tx = pure f <*> tx = f <$> tx
+-- > liftA = fmap
 --
 class Functor t => Applicative t where
   -- Inject
@@ -212,11 +215,13 @@ instance Functor ZipList where
 --
 -- Relationship with functors:
 --
--- > fmap = liftM
+-- > liftM = fmap
 --
 -- Relationship with applicative functors:
 --
--- > (<*>) = ap
+-- > return = pure
+--
+-- > ap = (<*>)
 --
 class Applicative t => Monad t where
   -- Inject
@@ -228,6 +233,12 @@ class Applicative t => Monad t where
 -- -----------------------------------------------------------------------------
 -- Monad derived operations
 
+(>>) :: Monad t => t a -> t b -> t b
+tx >> ty = tx >>= const ty
+
+(=<<) :: Monad t => (a -> t b) -> t a -> t b
+(=<<) = flip (>>=)
+
 -- | Flatten a monadic value within a monadic value.
 --
 -- > m >>= f = join (fmap f m)
@@ -235,11 +246,13 @@ class Applicative t => Monad t where
 join :: Monad t => t (t a) -> t a
 join x = x >>= id
 
-(>>) :: Monad t => t a -> t b -> t b
-tx >> ty = tx >>= const ty
-
-(=<<) :: Monad t => (a -> t b) -> t a -> t b
-(=<<) = flip (>>=)
+-- | This function can be used to define `<*>` in a boilerplate `Applicative`
+-- instance.
+--
+-- > ap = (<*>)
+--
+ap :: Monad t => t (a -> b) -> t a -> t b
+ap tf tx = tf >>= \ f -> tx >>= return . f
 
 -- | This function can be used to define `fmap` in a boilerplate `Functor`
 -- instance.
@@ -260,13 +273,8 @@ sequence = foldr mcons (return []) where
 mapM :: Monad t => (a -> t b) -> [a] -> t [b]
 mapM f = sequence . map f
 
--- | This function can be used to define `<*>` in a boilerplate `Applicative`
--- instance.
---
--- > ap = (<*>)
---
-ap :: Monad t => t (a -> b) -> t a -> t b
-ap tf tx = tf >>= \ f -> tx >>= return . f
+filterM :: Monad t => (a -> t Bool) -> [a] -> t [a]
+filterM = undefined
 
 -- -----------------------------------------------------------------------------
 -- Monad example instances
@@ -354,7 +362,7 @@ instance MonadTrans MaybeT where
 
 instance Monad t => Monad (MaybeT t) where
   return = MT . return . Just
-  (MT tm) >>= f =
+  MT tm >>= f =
     MT $ tm >>= \ mx -> case mx of
                           Nothing -> return Nothing
                           Just x  -> runMaybeT (f x)
@@ -370,7 +378,7 @@ instance Monad t => Functor (MaybeT t) where
 
 instance Monad t => MonadPlus (MaybeT t) where
   mzero = MT (return Nothing)
-  (MT l) `mplus` (MT r) =
+  MT l `mplus` MT r =
     MT $ l >>= \ m -> case m of
                         Nothing -> r
                         Just _  -> return m
