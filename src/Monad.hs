@@ -147,9 +147,9 @@ liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
 liftA2 f tx ty = f <$> tx <*> ty
 
 sequenceA :: Applicative t => [t a] -> t [a]
-sequenceA = foldr (liftA2 (:)) (pure [])
--- sequenceA []         = pure []
--- sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
+sequenceA []         = pure []
+sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
+-- sequenceA = foldr (liftA2 (:)) (pure [])
 
 when :: Applicative t => Bool -> t () -> t ()
 when True  tx = tx
@@ -263,13 +263,15 @@ ap tf tx = tf >>= \ f -> tx >>= return . f
 liftM :: Monad t => (a -> b) -> t a -> t b
 liftM f tx = tx >>= return . f
 
+-- NOTE: liftM2 = liftA2
 liftM2 :: Monad t => (a -> b -> c) -> t a -> t b -> t c
-liftM2 f tx ty = f <$> tx <*> ty
--- liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
+liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
 
+-- NOTE: sequence = sequenceA
 sequence :: Monad t => [t a] -> t [a]
-sequence = foldr mcons (return []) where
-  mcons tx txs = tx >>= \ x -> txs >>= \ xs -> return (x : xs)
+sequence []         = return []
+sequence (tx : txs) = tx >>= \ x -> sequence txs >>= return . (x :)
+-- sequence = foldr (liftM2 (:)) (return [])
 
 mapM :: Monad t => (a -> t b) -> [a] -> t [b]
 mapM f = sequence . map f
