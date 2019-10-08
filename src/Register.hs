@@ -4,6 +4,7 @@ module Register (
     Register
   , set1
   , set2
+
   , Exp (..)
   , eval
   , eval'

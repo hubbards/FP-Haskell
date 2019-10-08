@@ -5,6 +5,7 @@ module Tree (
   , leaf
   , zeros
   , isEmpty
+
   , Zipper
   , Context (..)
   , isHole

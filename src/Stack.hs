@@ -7,6 +7,7 @@ module Stack (
   , zero
   , push
   , pop
+
   , Cmd (..)
   , Prog
   , evalCmd

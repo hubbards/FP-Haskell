@@ -8,6 +8,7 @@ module State (
   , get
   , evalState
   , execState
+
   , StateT
   , stateT
   , runStateT
