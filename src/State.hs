@@ -4,10 +4,11 @@ module State (
     State
   , state
   , runState
-  , put
-  , get
   , evalState
   , execState
+  , put
+  , get
+  , modify
 
   , StateT
   , stateT
@@ -57,6 +58,14 @@ state = S
 runState :: State s a -> s -> (a, s)
 runState (S c) = c
 
+-- | Run effectful computation with initial state and return result.
+evalState :: State s a -> s -> a
+evalState sc s = fst (runState sc s)
+
+-- | Run effectful computation with initial state and return effect.
+execState :: State s a -> s -> s
+execState sc s = snd (runState sc s)
+
 -- | Set current state.
 put :: s -> State s ()
 put s = S $ const ((), s)
@@ -65,13 +74,8 @@ put s = S $ const ((), s)
 get :: State s s
 get = S $ \ s -> (s, s)
 
--- | Run effectful computation with initial state and return result.
-evalState :: State s a -> s -> a
-evalState sc s = fst (runState sc s)
-
--- | Run effectful computation with initial state and return effect.
-execState :: State s a -> s -> s
-execState sc s = snd (runState sc s)
+modify :: (s -> s) -> State s ()
+modify f = get >>= (put . f)
 
 -- TODO: add more primatives / functions from Control.Monad.Trans.State
 
