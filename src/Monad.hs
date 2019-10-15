@@ -28,6 +28,7 @@ module Monad (
   , foldM
 
   , MonadPlus (..)
+  , msum
   , guard
 
   , MonadTrans (..)
@@ -319,6 +320,9 @@ class Monad t => MonadPlus t where
 
 -- -----------------------------------------------------------------------------
 -- MonadPlus derived operations
+
+msum :: MonadPlus t => [t a] -> t a
+msum = foldr mplus mzero
 
 -- NOTE: this is actually a derived operation of Alternative
 guard :: MonadPlus t => Bool -> t ()
