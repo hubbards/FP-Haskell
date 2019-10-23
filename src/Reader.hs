@@ -66,32 +66,32 @@ local f (R c) = R (c . f)
 -- | Data type for reader monad transformer. The first and last type parameters
 -- are the same as before and the second type parameter represents the inner
 -- monad.
-data ReaderT r m a = RT (r -> m a)
--- newtype ReaderT r m a = ReaderT { runReaderT :: r -> m a }
+data ReaderT r t a = RT (r -> t a)
+-- newtype ReaderT r t a = ReaderT { runReaderT :: r -> t a }
 
 instance MonadTrans (ReaderT r) where
-  lift m = RT (const m)
+  lift = RT . const
 
-instance Monad m => Monad (ReaderT r m) where
+instance Monad t => Monad (ReaderT r t) where
   return = lift . return
-  RT c >>= f = RT $ \ r -> c r >>= \ x -> let RT d = f x in d r
+  RT c >>= f = RT $ \ r -> do { x <- c r ; let RT c' = f x in c' r }
 
 -- Boilerplate
-instance Monad m => Applicative (ReaderT r m) where
+instance Monad t => Applicative (ReaderT r t) where
   pure = return
   (<*>) = ap
 
 -- Boilerplate
-instance Monad m => Functor (ReaderT r m) where
+instance Monad t => Functor (ReaderT r t) where
   fmap = liftM
 
 -- -----------------------------------------------------------------------------
 -- Reader monad transformer functions
 
-readerT :: Monad m => (r -> m a) -> ReaderT r m a
+readerT :: Monad t => (r -> t a) -> ReaderT r t a
 readerT = RT
 
-runReaderT :: ReaderT r m a -> r -> m a
+runReaderT :: ReaderT r t a -> r -> t a
 runReaderT (RT c) = c
 
 -- TODO: add primatives / functions (from Control.Monad.Trans.Reader)

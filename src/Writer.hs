@@ -64,41 +64,44 @@ censor f (W x s) = W x (f s)
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer data type and type class instances
 
-data WriterT w m a = WT (m (a, w))
--- newtype WriterT w m a = WriterT { runWriterT :: (m (a, w)) }
+data WriterT w t a = WT (t (a, w))
+-- newtype WriterT w t a = WriterT { runWriterT :: (t (a, w)) }
 
 instance Monoid w => MonadTrans (WriterT w) where
-  lift m = WT $ m >>= \ x -> return (x, mempty)
+  lift v = WT $ do { x <- v ; return (x, mempty) }
 
-instance (Monoid w, Monad m) => Monad (WriterT w m) where
+instance (Monoid w, Monad t) => Monad (WriterT w t) where
   return x = WT $ return (x, mempty)
-  WT m >>= f = WT $ m >>= \ (x, s) -> let WT n = f x in
-                    n >>= \ (y, t) -> return (y, s `mappend` t)
+  WT u >>= f = WT $ do
+    (x, s) <- u
+    let WT v = f x
+    (y, t) <- v
+    return (y, s `mappend` t)
 
 -- Boilerplate
-instance (Monoid w, Monad m) => Applicative (WriterT w m) where
+instance (Monoid w, Monad t) => Applicative (WriterT w t) where
   pure = return
   (<*>) = ap
 
 -- Boilerplate
-instance (Monoid w, Monad m) => Functor (WriterT w m) where
+instance (Monoid w, Monad t) => Functor (WriterT w t) where
   fmap = liftM
 
-instance (Monoid w, MonadPlus m) => Alternative (WriterT w m) where
+instance (Monoid w, MonadPlus t) => Alternative (WriterT w t) where
   empty = WT empty
-  WT m <|> WT n = WT (m <|> n)
+  WT u <|> WT v = WT (u <|> v)
 
-instance (Monoid w, MonadPlus m) => MonadPlus (WriterT w m) where
+instance (Monoid w, MonadPlus t) => MonadPlus (WriterT w t) where
   mzero = WT mzero
-  WT m `mplus` WT n = WT (m `mplus` n)
+  WT u `mplus` WT v = WT (u `mplus` v)
 
 -- -----------------------------------------------------------------------------
 -- Writer monad transformer functions
 
-writerT :: (Monoid w, Monad m) => m (a, w) -> WriterT w m a
+writerT :: (Monoid w, Monad t) => t (a, w) -> WriterT w t a
 writerT = WT
 
-runWriterT :: WriterT w m a -> m (a, w)
-runWriterT (WT x) = x
+runWriterT :: WriterT w t a -> t (a, w)
+runWriterT (WT v) = v
 
 -- TODO: add primatives / functions (from Control.Monad.Trans.Writer)

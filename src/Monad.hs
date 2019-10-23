@@ -109,7 +109,7 @@ instance Functor [] where
 --
 -- Identity law:
 --
--- > pure id <*> tx = tx
+-- > pure id <*> v = v
 --
 -- Homomorphism law:
 --
@@ -117,11 +117,11 @@ instance Functor [] where
 --
 -- Composition law:
 --
--- > pure (.) <*> tu <*> tv <*> tw = tu <*> (tv <*> tw)
+-- > pure (.) <*> u <*> v <*> w = u <*> (v <*> w)
 --
 -- Application law:
 --
--- > tf <*> pure x = pure ($ x) <*> tf
+-- > v <*> pure x = pure ($ x) <*> v
 --
 -- Relationship with functors:
 --
@@ -142,14 +142,14 @@ class Functor t => Applicative t where
 -- > liftA = fmap
 --
 liftA :: Applicative t => (a -> b) -> t a -> t b
-liftA f tx = pure f <*> tx
+liftA f v = pure f <*> v
 
 liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
-liftA2 f tx ty = f <$> tx <*> ty
+liftA2 f u v = f <$> u <*> v
 
 sequenceA :: Applicative t => [t a] -> t [a]
 sequenceA []         = pure []
-sequenceA (tx : txs) = (:) <$> tx <*> sequenceA txs
+sequenceA (v : vs) = (:) <$> v <*> sequenceA vs
 -- sequenceA = foldr (liftA2 (:)) (pure [])
 
 when :: Applicative t => Bool -> t () -> t ()
@@ -209,11 +209,11 @@ instance Functor ZipList where
 --
 -- Right identity law:
 --
--- > tx >>= return = tx
+-- > v >>= return = v
 --
 -- Associativity:
 --
--- > (tx >>= f) >>= g = tx >>= (\x -> f x >>= g)
+-- > (v >>= f) >>= g = v >>= (\ x -> f x >>= g)
 --
 -- Relationship with functors:
 --
@@ -243,10 +243,10 @@ tx >> ty = tx >>= const ty
 
 -- | Flatten a monadic value within a monadic value.
 --
--- > m >>= f = join (fmap f m)
+-- > v >>= f = join (fmap f v)
 --
 join :: Monad t => t (t a) -> t a
-join x = x >>= id
+join v = v >>= id
 
 -- | This function can be used to define `<*>` in a boilerplate `Applicative`
 -- instance.
@@ -254,7 +254,7 @@ join x = x >>= id
 -- > ap = (<*>)
 --
 ap :: Monad t => t (a -> b) -> t a -> t b
-ap tf tx = tf >>= \ f -> tx >>= return . f
+ap u v = u >>= \ f -> v >>= return . f
 
 -- | This function can be used to define `fmap` in a boilerplate `Functor`
 -- instance.
@@ -262,16 +262,16 @@ ap tf tx = tf >>= \ f -> tx >>= return . f
 -- > liftM = fmap
 --
 liftM :: Monad t => (a -> b) -> t a -> t b
-liftM f tx = tx >>= return . f
+liftM f v = v >>= return . f
 
 -- NOTE: liftM2 = liftA2
 liftM2 :: Monad t => (a -> b -> c) -> t a -> t b -> t c
-liftM2 f tx ty = tx >>= \ x -> ty >>= return . f x
+liftM2 f u v = u >>= \ x -> v >>= return . f x
 
 -- NOTE: sequence = sequenceA
 sequence :: Monad t => [t a] -> t [a]
-sequence []         = return []
-sequence (tx : txs) = tx >>= \ x -> sequence txs >>= return . (x :)
+sequence []       = return []
+sequence (v : vs) = v >>= \ x -> sequence vs >>= return . (x :)
 -- sequence = foldr (liftM2 (:)) (return [])
 
 mapM :: Monad t => (a -> t b) -> [a] -> t [b]
@@ -352,7 +352,7 @@ instance MonadPlus [] where
 --
 -- Distributivity law:
 --
--- > lift (m >>= f) = lift m >>= (lift . f)
+-- > lift (v >>= f) = lift v >>= (lift . f)
 --
 class MonadTrans s where
   -- Lift
@@ -369,15 +369,16 @@ data MaybeT t a = MT (t (Maybe a))
 -- newtype MaybeT t a = MaybeT { runMaybeT :: t (Maybe a) }
 
 instance MonadTrans MaybeT where
-  lift m = MT (Just <$> m)
--- lift m = MT (m >>= return . Just)
+  lift = MT . fmap Just
+-- lift v = MT (Just <$> v)
+-- lift v = MT (v >>= return . Just)
 
 instance Monad t => Monad (MaybeT t) where
   return = MT . return . Just
-  MT tm >>= f =
-    MT $ tm >>= \ mx -> case mx of
-                          Nothing -> return Nothing
-                          Just x  -> runMaybeT (f x)
+  MT v >>= f =
+    MT $ v >>= \ m -> case m of
+                        Nothing -> return Nothing
+                        Just x  -> runMaybeT (f x)
 
 -- Boilerplate
 instance Monad t => Applicative (MaybeT t) where
@@ -399,6 +400,6 @@ maybeT :: Monad t => t (Maybe a) -> MaybeT t a
 maybeT = MT
 
 runMaybeT :: MaybeT t a -> t (Maybe a)
-runMaybeT (MT t) = t
+runMaybeT (MT v) = v
 
 -- TODO: add primatives / functions (from Control.Monad.Trans.Maybe)

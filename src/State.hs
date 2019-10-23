@@ -85,32 +85,32 @@ modify f = get >>= (put . f)
 -- | Data type for state monad transformer. The first and last type parameters
 -- are the same as before and the second type parameter represents the inner
 -- monad.
-data StateT s m a = ST (s -> m (a, s))
--- newtype StateT s m a = StateT { runStateT :: s -> m (a, s) }
+data StateT s t a = ST (s -> t (a, s))
+-- newtype StateT s t a = StateT { runStateT :: s -> t (a, s) }
 
 instance MonadTrans (StateT s) where
-  lift x = ST $ \ s -> x >>= \ y -> return (y, s)
+  lift v = ST $ \ s -> do { x <- v ; return (x, s) }
 
-instance Monad m => Monad (StateT s m) where
+instance Monad t => Monad (StateT s t) where
   return x = ST $ \ s -> return (x, s)
-  ST c >>= f = ST $ \ s -> c s >>= \ (x, s') -> let ST c' = f x in c' s'
+  ST c >>= f = ST $ \ s -> do { (x, s') <- c s ; let ST c' = f x in c' s' }
 
 -- Boilerplate
-instance Monad m => Applicative (StateT s m) where
+instance Monad t => Applicative (StateT s t) where
   pure = return
   (<*>) = ap
 
 -- Boilerplate
-instance Monad m => Functor (StateT s m) where
+instance Monad t => Functor (StateT s t) where
   fmap = liftM
 
 -- -----------------------------------------------------------------------------
 -- State monad transformer functions
 
-stateT :: Monad m => (s -> m (a, s)) -> StateT s m a
+stateT :: Monad t => (s -> t (a, s)) -> StateT s t a
 stateT = ST
 
-runStateT :: StateT s m a -> s -> m (a, s)
+runStateT :: StateT s t a -> s -> t (a, s)
 runStateT (ST c) = c
 
 -- TODO: add primatives / functions (from Control.Monad.Trans.State)
