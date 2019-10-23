@@ -30,13 +30,13 @@ getPassword = do
 
 -- | "Saves" password.
 --
--- NOTE: In a real application this would hash and salt the application before
+-- NOTE: In a real application, this would hash and salt the password before
 -- storing it in a database.
 --
 setPassword :: String -> IO ()
 setPassword _ = putStrLn "Saving password."
 
--- | Prompt user for new password then save it to file.
+-- | Prompt user for new password then save it.
 newPassword :: IO ()
 newPassword = getPassword >>= setPassword
 
