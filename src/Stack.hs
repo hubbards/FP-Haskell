@@ -1,10 +1,11 @@
 -- | This module contains a stack ADT and a deep-embedded DSL for a stack-based
--- language.
+-- arithmatic language.
 module Stack (
-    Stack
-  , Error
+    Error
   , empty
   , zero
+
+  , Stack
   , push
   , pop
 
@@ -17,6 +18,7 @@ module Stack (
   ) where
 
 import Control.Monad ( liftM2 )
+-- import Data.Functor.Identity ( Identity (..) )
 
 -- NOTE: from transformers package
 import Control.Monad.Trans.Class ( lift )
@@ -28,6 +30,7 @@ import Control.Monad.Trans.State (
   , modify
   , execStateT
   )
+-- import Control.Monad.Trans.Except ( ExceptT (..) )
 
 -- -----------------------------------------------------------------------------
 -- Stack ADT
@@ -85,26 +88,29 @@ evalCmd Mult     = liftM2 (*) pop' pop' >>= push'
 evalCmd Div      = do
   x <- pop'
   y <- pop'
-  z <- lift (div' x y)
+  z <- lift (sdiv x y)
   push' z
 
+-- | Lifted push operation.
 push' :: Monad m => a -> StateT (Stack a) m ()
 push' = modify . push
 
+-- | Lifted pop operation.
 pop' :: StateT (Stack a) (Either Error) a
 pop' = StateT pop
 
-div' :: Int -> Int -> Either Error Int
-div' _ 0 = Left zero
-div' x y = Right (x `div` y)
-
-evalCmd' :: Cmd -> Stack Int -> Either Error (Stack Int)
-evalCmd' = execStateT . evalCmd
+-- | Safe integral division.
+sdiv :: Integral a => a -> a -> Either Error a
+sdiv _ 0 = Left zero
+sdiv x y = Right (x `div` y)
 
 -- | Monadic semantic function for programs. The state monad transformer is used
 -- to model the semantic domain.
 evalProg :: Prog -> StateT (Stack Int) (Either Error) ()
 evalProg = mapM_ evalCmd
+
+evalCmd' :: Cmd -> Stack Int -> Either Error (Stack Int)
+evalCmd' = execStateT . evalCmd
 
 evalProg' :: Prog -> Stack Int -> Either Error (Stack Int)
 evalProg' = execStateT . evalProg
