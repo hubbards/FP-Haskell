@@ -1,7 +1,7 @@
 -- | This module contains a type class for arrows.
 module Arrow (
-    assoc
-  , Arrow (..)
+    Arrow (..)
+  , assoc
   , second
   , (***)
   , (&&&)
@@ -10,9 +10,6 @@ module Arrow (
   ) where
 
 import Data.Tuple ( swap )
-
-assoc :: ((a, b), c) -> (a, (b, c))
-assoc ((x, y), z) = (x, (y, z))
 
 -- | Type class for arrows.
 --
@@ -49,12 +46,16 @@ assoc ((x, y), z) = (x, (y, z))
 -- > first (arr f) = arr (first f)
 --
 class Arrow t where
-  -- lift a function into an arrow
+  -- | Lift a function into an arrow
   arr :: (a -> b) -> t a b
-  -- arrow composition
+  -- | Arrow composition
   (>>>) :: t a b -> t b c -> t a c
-  -- Convert to arrow on pairs which leaves second component unchanged
+  -- | Convert to arrow on pairs which leaves second component unchanged
   first :: t a b -> t (a, c) (b, c)
+
+-- | Helper function
+assoc :: ((a, b), c) -> (a, (b, c))
+assoc ((x, y), z) = (x, (y, z))
 
 -- -----------------------------------------------------------------------------
 -- Derived operations

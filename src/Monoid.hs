@@ -31,9 +31,9 @@ import Prelude hiding (
 -- > x `mappend` mempty = x
 --
 class Monoid a where
-  -- Identity
+  -- | Identity
   mempty :: a
-  -- Binary operator
+  -- | Binary operator
   mappend :: a -> a -> a
 
 -- -----------------------------------------------------------------------------

@@ -68,7 +68,7 @@ infixl 1 >>
 -- > fmap (g . f) = fmap g . fmap f
 --
 class Functor t where
-  -- Map
+  -- | Map
   fmap :: (a -> b) -> t a -> t b
 
 -- -----------------------------------------------------------------------------
@@ -128,9 +128,9 @@ instance Functor [] where
 -- > liftA = fmap
 --
 class Functor t => Applicative t where
-  -- Inject
+  -- | Inject
   pure :: a -> t a
-  -- Apply
+  -- | Apply
   (<*>) :: t (a -> b) -> t a -> t b
 
 -- -----------------------------------------------------------------------------
@@ -226,10 +226,10 @@ instance Functor ZipList where
 -- > ap = (<*>)
 --
 class Applicative t => Monad t where
-  -- Inject
+  -- | Inject
   return :: a -> t a
   return = pure
-  -- Bind
+  -- | Bind
   (>>=) :: t a -> (a -> t b) -> t b
 
 -- -----------------------------------------------------------------------------
@@ -315,7 +315,9 @@ instance Monad [] where
 -- > mzero >>= f = mzero
 --
 class Monad t => MonadPlus t where
+  -- | Identity
   mzero :: t a
+  -- | Binary operator
   mplus :: t a -> t a -> t a
 
 -- -----------------------------------------------------------------------------
@@ -355,7 +357,7 @@ instance MonadPlus [] where
 -- > lift (v >>= f) = lift v >>= (lift . f)
 --
 class MonadTrans s where
-  -- Lift
+  -- | Lift
   lift :: Monad t => t a -> s t a
 
 -- -----------------------------------------------------------------------------
