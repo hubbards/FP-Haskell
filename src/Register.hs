@@ -1,5 +1,5 @@
 -- | This module contains a register ADT and a deep-embedded DSL for a
--- register-based language.
+-- register-based arithmatic language.
 module Register (
     Register
   , set1
