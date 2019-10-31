@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6edd2bb34769abc436a2bf033a9f8f8de7c0addf86ea0e78f71e5aba58dbca2a
+-- hash: 88696bc7fa7b01b9ab33c8974b549f6f085e865d0395fb9ad73b556a71991e6b
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -38,6 +38,8 @@ library
       Tree
       Writer
   other-modules:
+      Temp1
+      Temp2
       Paths_fp_haskell
   hs-source-dirs:
       src
@@ -45,7 +47,7 @@ library
   build-depends:
       base >=4.7 && <5
     , pretty
-    , transformers
+    , transformers >=0.5
   default-language: Haskell2010
 
 test-suite tests

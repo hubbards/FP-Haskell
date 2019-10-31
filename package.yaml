@@ -37,7 +37,7 @@ library:
   - Tree
   - Writer
   dependencies:
-  - transformers
+  - transformers >= 0.5
   - pretty
 
 tests:
