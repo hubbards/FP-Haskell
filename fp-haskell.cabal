@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 88696bc7fa7b01b9ab33c8974b549f6f085e865d0395fb9ad73b556a71991e6b
+-- hash: eb59eb4bdbb0671699faa98a85bdbe2de0579529de1701cc4fedcb8d36d4ba6e
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -30,7 +30,6 @@ library
       Arrow
       Monad
       Monoid
-      Password
       Reader
       Register
       Stack
@@ -38,8 +37,6 @@ library
       Tree
       Writer
   other-modules:
-      Temp1
-      Temp2
       Paths_fp_haskell
   hs-source-dirs:
       src

@@ -29,7 +29,6 @@ library:
   - Arrow
   - Monad
   - Monoid
-  - Password
   - Reader
   - Register
   - Stack
