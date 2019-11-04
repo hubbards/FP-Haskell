@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: eb59eb4bdbb0671699faa98a85bdbe2de0579529de1701cc4fedcb8d36d4ba6e
+-- hash: da47b88f5036760f8a199f026d00abce7378a424b0c78ea864706245e452dc80
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -30,13 +30,16 @@ library
       Arrow
       Monad
       Monoid
+      Queue
       Reader
+      RedBlack
       Register
       Stack
       State
       Tree
       Writer
   other-modules:
+      RedBlackGADT
       Paths_fp_haskell
   hs-source-dirs:
       src
@@ -52,6 +55,8 @@ test-suite tests
   main-is: Main.hs
   other-modules:
       MonadTest
+      QueueTest
+      RedBlackTest
       RegisterTest
       StackTest
       TreeTest
