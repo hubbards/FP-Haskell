@@ -4,6 +4,7 @@ module RedBlackTest ( tests ) where
 import Test.HUnit (
     Test
   , (~:)
+  , (~?=)
   , (@=?)
   , (@?)
   )

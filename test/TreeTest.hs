@@ -10,8 +10,8 @@ import Test.HUnit (
 
 import Tree
 
-tests :: [Test]
-tests =
+tests :: Test
+tests = "Tree" ~:
   [ "basic operations" ~:
     [ "leaf" ~:
       [ Node 1 Empty Empty    @=? leaf 1

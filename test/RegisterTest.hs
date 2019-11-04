@@ -9,8 +9,8 @@ import Test.HUnit (
 
 import Register
 
-tests :: [Test]
-tests =
+tests :: Test
+tests = "Register" ~:
   [ "state" ~:
     [ "set1" ~: (3, 2) @=? set1 3 (1, 2)
     , "set2" ~: (1, 3) @=? set2 3 (1, 2) ]

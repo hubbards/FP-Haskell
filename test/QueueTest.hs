@@ -12,7 +12,7 @@ import Queue
 
 tests :: Test
 tests = "Queue" ~:
-  [ "list queue" ~:
+  [ "LQueue" ~:
     let
       queue1  = enqueue 1 empty
       queue12 = enqueue 2 queue1
@@ -25,7 +25,7 @@ tests = "Queue" ~:
       , dequeue (queue12 :: LQueue Int) @=? Just (1, fromList [2])
       -- TODO: add more unit tests
       ]
-  , "batched queue" ~:
+  , "BQueue" ~:
     let
       queue1  = enqueue 1 empty
       queue12 = enqueue 2 queue1
@@ -38,7 +38,7 @@ tests = "Queue" ~:
       , dequeue (queue12 :: BQueue Int) @=? Just (1, fromList [2])
       -- TODO: add more unit tests
       ]
-  , "persistent batched queue" ~:
+  , "PQueue" ~:
     let
       queue1  = enqueue 1 empty
       queue12 = enqueue 2 queue1

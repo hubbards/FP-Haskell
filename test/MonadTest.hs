@@ -59,8 +59,8 @@ prop_applicativeFunctor f tx = fmap f tx == pure f <*> tx
 
 -- TODO: add properties
 
-tests :: [Test]
-tests =
+tests :: Test
+tests = "Monad" ~:
   [ "Functor" ~:
     [ "Maybe" ~:
       [ Just 3  @=? fmap (+ 1) (Just 2)

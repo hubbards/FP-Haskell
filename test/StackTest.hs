@@ -9,8 +9,8 @@ import Test.HUnit (
 
 import Stack
 
-tests :: [Test]
-tests =
+tests :: Test
+tests = "Stack" ~:
   [ "evalCmd" ~:
     [ "Push 1" ~:
       [ Right [1]    @=? evalCmd' (Push 1) []

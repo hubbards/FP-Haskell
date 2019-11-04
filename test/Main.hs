@@ -22,9 +22,9 @@ main :: IO Counts
 main = do
   doctest ["src" </> "Tree.hs"]
   runTestTT . test $
-    [ "Monad"    ~: MonadTest.tests
+    [ MonadTest.tests
     , QueueTest.tests
     , RedBlackTest.tests
-    , "Register" ~: RegisterTest.tests
-    , "Stack"    ~: StackTest.tests
-    , "Tree"     ~: TreeTest.tests ]
+    , RegisterTest.tests
+    , StackTest.tests
+    , TreeTest.tests ]
