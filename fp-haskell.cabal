@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: da47b88f5036760f8a199f026d00abce7378a424b0c78ea864706245e452dc80
+-- hash: 7f56346ea1e95a0a71de8b71eb14c647003d7efbacfba8f585f13d9b682715c6
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -33,13 +33,13 @@ library
       Queue
       Reader
       RedBlack
+      RedBlackGADT
       Register
       Stack
       State
       Tree
       Writer
   other-modules:
-      RedBlackGADT
       Paths_fp_haskell
   hs-source-dirs:
       src
