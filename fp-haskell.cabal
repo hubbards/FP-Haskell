@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7f56346ea1e95a0a71de8b71eb14c647003d7efbacfba8f585f13d9b682715c6
+-- hash: 3b47ba98cf59f29abbba48e8109771537a3a6f338b85b85302c48246ee4a0a02
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Arrow
       Monad
       Monoid
+      Parser
       Queue
       Reader
       RedBlack

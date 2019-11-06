@@ -29,6 +29,7 @@ library:
   - Arrow
   - Monad
   - Monoid
+  - Parser
   - Queue
   - Reader
   - RedBlack
