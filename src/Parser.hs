@@ -9,6 +9,8 @@ module Parser (
   , digit
   , lower
   , upper
+  , letter
+  , word
   ) where
 
 import Control.Applicative ( Alternative (..) )
@@ -84,3 +86,15 @@ lower = sat isLower
 
 upper :: Parser String Char
 upper = sat isUpper
+
+letter :: Parser String Char
+letter = lower `mplus` upper
+
+-- | Parser for a string of letters.
+--
+-- >>> runParser word "Yes!"
+-- [("Yes","!"),("Ye","s!"),("Y","es!"),("","Yes!")]
+--
+word :: Parser String String
+word = word' `mplus` return "" where
+  word' = do { x <- letter ; xs <- word ; return (x : xs) }
