@@ -12,8 +12,8 @@ import Test.HUnit (
 import RedBlack
 
 tests :: Test
-tests = "RedBlack" ~:
-  [ contains 1 Empty  @=? False
+tests = "RedBlack" ~: [
+    contains 1 Empty  @=? False
   , contains 1 tree1  @=? True
   , contains 1 tree2  @=? False
   , contains 2 tree21 @=? True
