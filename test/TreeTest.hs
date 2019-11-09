@@ -25,13 +25,15 @@ testFunctor = "Functor" ~: [
   , Node 2 (leaf 3) Empty    @=? fmap (+ 1) (Node 1 (leaf 2) Empty)
   , Node 2 Empty (leaf 3)    @=? fmap (+ 1) (Node 1 Empty (leaf 2))
   , Node 2 (leaf 3) (leaf 4) @=? fmap (+ 1) (Node 1 (leaf 2) (leaf 3))
-  ]
+  ] where
+    f :: Int -> Int
+    f = (+ 1)
 
 testFoldable :: Test
 testFoldable = "Foldable" ~: [
-    0 @=? foldr 0 (+) Empty
-  , 1 @=? foldr 0 (+) (leaf 1)
-  , 3 @=? foldr 0 (+) (Node 1 (leaf 2) Empty)
-  , 3 @=? foldr 0 (+) (Node 1 Empty (leaf 2))
-  , 6 @=? foldr 0 (+) (Node 1 (leaf 2) (leaf 3))
+    0 @=? foldr (+) 0 Empty
+  , 1 @=? foldr (+) 0 (leaf 1)
+  , 3 @=? foldr (+) 0 (Node 1 (leaf 2) Empty)
+  , 3 @=? foldr (+) 0 (Node 1 Empty (leaf 2))
+  , 6 @=? foldr (+) 0 (Node 1 (leaf 2) (leaf 3))
   ]

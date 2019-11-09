@@ -27,7 +27,7 @@ testLQueue = "LQueue" ~: [
   , Just (1, fromList [2]) @=? dequeue queue12
   -- TODO: add more unit tests
   ] where
-    queue1, queue12 :: LQueue
+    queue1, queue12 :: LQueue Int
     queue1  = enqueue 1 empty
     queue12 = enqueue 2 queue1
 
