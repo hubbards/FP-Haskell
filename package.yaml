@@ -35,6 +35,7 @@ library:
   - RedBlack
   - RedBlackGADT
   - Register
+  - Set
   - Stack
   - State
   - Tree

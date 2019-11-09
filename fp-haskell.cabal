@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3b47ba98cf59f29abbba48e8109771537a3a6f338b85b85302c48246ee4a0a02
+-- hash: 312565fc3f723eda8a72bc7cd7747585b06c6d4dcd9f0381505ce3cf66236f43
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       RedBlack
       RedBlackGADT
       Register
+      Set
       Stack
       State
       Tree
