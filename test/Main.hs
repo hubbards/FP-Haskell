@@ -14,6 +14,7 @@ import qualified MonadTest
 import qualified QueueTest
 import qualified RedBlackTest
 import qualified RegisterTest
+import qualified SetTest
 import qualified StackTest
 import qualified TreeTest
 
@@ -26,5 +27,6 @@ main = do
     , QueueTest.tests
     , RedBlackTest.tests
     , RegisterTest.tests
+    , SetTest.tests
     , StackTest.tests
     , TreeTest.tests ]

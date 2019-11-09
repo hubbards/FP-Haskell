@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 312565fc3f723eda8a72bc7cd7747585b06c6d4dcd9f0381505ce3cf66236f43
+-- hash: a25f048357f5066c1f23d8abab9784223a10d7fa77a7c563ca0954d4badf31fc
 
 name:           fp-haskell
 version:        0.1.0.0
@@ -60,6 +60,7 @@ test-suite tests
       QueueTest
       RedBlackTest
       RegisterTest
+      SetTest
       StackTest
       TreeTest
       Paths_fp_haskell
