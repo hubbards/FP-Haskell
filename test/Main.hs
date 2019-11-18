@@ -7,7 +7,6 @@ import Test.HUnit (
     Counts
   , runTestTT
   , test
-  , (~:)
   )
 
 import qualified MonadTest
@@ -21,12 +20,16 @@ import qualified TreeTest
 
 main :: IO Counts
 main = do
-  doctest ["src" </> "Tree.hs"]
-  runTestTT . test $
-    [ MonadTest.tests
+  doctest [
+      "src" </> "Tree.hs"
+    , "src" </> "Parser.hs"
+    ]
+  runTestTT . test $ [
+      MonadTest.tests
     , QueueTest.tests
     , RedBlackTest.tests
     , RegisterTest.tests
     , SetTest.tests
     , StackTest.tests
-    , TreeTest.tests ]
+    , TreeTest.tests
+    ]
