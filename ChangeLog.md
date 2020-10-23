@@ -12,3 +12,4 @@ Versions of this project should adhere to the Haskell
 [changelog]: https://docs.haskellstack.org/en/stable/ChangeLog
 [pvp]: https://pvp.haskell.org
 [semver]: https://semver.org
+[standards]: https://www.gnu.org/prep/standards/html_node/Change-Logs.html
