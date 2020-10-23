@@ -9,7 +9,6 @@ Versions of this project should adhere to the Haskell
 
 ## Unreleased changes
 
-[changelog]: https://docs.haskellstack.org/en/stable/ChangeLog/
-[pvp]: https://pvp.haskell.org/
-[keepachangelog]: https://keepachangelog.com/en/1.0.0/
-[semver]: https://semver.org/spec/v2.0.0.html
+[changelog]: https://docs.haskellstack.org/en/stable/ChangeLog
+[pvp]: https://pvp.haskell.org
+[semver]: https://semver.org
