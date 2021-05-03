@@ -148,7 +148,7 @@ liftA2 :: Applicative t => (a -> b -> c) -> t a -> t b -> t c
 liftA2 f u v = f <$> u <*> v
 
 sequenceA :: Applicative t => [t a] -> t [a]
-sequenceA []         = pure []
+sequenceA []       = pure []
 sequenceA (v : vs) = (:) <$> v <*> sequenceA vs
 -- sequenceA = foldr (liftA2 (:)) (pure [])
 

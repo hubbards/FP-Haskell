@@ -28,7 +28,7 @@ data Tree c a where
 -- NOTE: takes O(log n) time
 --
 contains :: Ord a => a -> Tree c a -> Bool
-contains x Empty         = False
+contains _ Empty         = False
 contains x (NodeB y l r) = contains' x y l r
 contains x (NodeR y l r) = contains' x y l r
 
